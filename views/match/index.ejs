@@ -1,0 +1,70 @@
+<div class="row g-4">
+  <div class="col-12">
+    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+      <div>
+        <h2 class="fw-bold mb-1">Find Your People 💜</h2>
+        <p style="color:var(--text-2);font-size:.875rem">Based on shared interests. All profiles stay anonymous.</p>
+      </div>
+      <a href="/profile" class="btn btn-ghost btn-sm"><i class="bi bi-pencil me-1"></i>Edit Interests</a>
+    </div>
+    <!-- My interests -->
+    <div class="d-flex flex-wrap gap-2 mt-2">
+      <% myInterests.forEach(i => { %><span class="badge-tag">✨ <%= i %></span><% }) %>
+    </div>
+  </div>
+
+  <% if (matches.length === 0) { %>
+  <div class="col-12">
+    <div class="card text-center py-5 px-4" style="border-radius:24px!important">
+      <div style="font-size:4rem;margin-bottom:1rem">💔</div>
+      <h4 class="fw-bold mb-2">No matches yet</h4>
+      <p style="color:var(--text-2);max-width:380px;margin:0 auto 1.5rem">
+        Add more interests to your profile so we can find people with the same vibes!
+      </p>
+      <a href="/profile" class="btn btn-gradient mx-auto" style="width:fit-content">Update My Interests ✨</a>
+    </div>
+  </div>
+  <% } %>
+
+  <% matches.forEach(m => { %>
+  <div class="col-sm-6 col-xl-4">
+    <div class="match-card card p-4 h-100" style="border-radius:20px!important">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <!-- Avatar with ring -->
+        <div class="avatar-ring">
+          <div class="avatar-lg" style="background:<%= m.avatarColor %>;width:52px;height:52px;font-size:1.2rem">
+            <%= m.anonUsername.charAt(0) %>
+          </div>
+        </div>
+        <div class="flex-grow-1">
+          <div class="fw-bold" style="font-size:.925rem"><%= m.anonUsername %></div>
+          <div style="color:var(--text-3);font-size:.75rem"><%= m.theirInterests.length %> interests</div>
+        </div>
+        <!-- Score ring -->
+        <div class="match-score-ring" style="--score:<%= m.score %>%">
+          <span style="font-size:.75rem;font-weight:800"><%= m.score %>%</span>
+        </div>
+      </div>
+
+      <% if (m.bio) { %>
+      <p style="font-size:.82rem;color:var(--text-2);line-height:1.5;margin-bottom:.75rem">
+        "<%= m.bio.substring(0,100) %><%= m.bio.length>100?'...':'' %>"
+      </p>
+      <% } %>
+
+      <% if (m.commonInterests.length > 0) { %>
+      <div class="d-flex flex-wrap gap-1 mb-3">
+        <span style="font-size:.72rem;color:var(--text-3);width:100%;margin-bottom:.2rem">Both into:</span>
+        <% m.commonInterests.forEach(i => { %>
+        <span class="badge-tag" style="font-size:.7rem">💜 <%= i %></span>
+        <% }) %>
+      </div>
+      <% } %>
+
+      <button class="btn btn-gradient w-100 mt-auto start-match-chat" data-user-id="<%= m.userId %>" style="border-radius:14px!important">
+        <i class="bi bi-chat-dots me-1"></i>Chat Anonymously
+      </button>
+    </div>
+  </div>
+  <% }) %>
+</div>

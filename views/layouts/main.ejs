@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | CampusWhisper</title>
+  <meta name="description" content="<%= metaDesc || 'CampusWhisper — Anonymous college social platform.' %>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="container-fluid px-2 px-md-4 py-3">
+    <%- include('../partials/flash') %>
+    <%- body %>
+  </main>
+
+  <!-- Instagram-style Bottom Navigation (mobile only) -->
+  <% if (locals.user) { %>
+  <nav class="bottom-nav">
+    <div class="bottom-nav-items">
+      <a href="/confessions" class="bottom-nav-btn <%= typeof title !== 'undefined' && title === 'Feed' ? 'active' : '' %>">
+        <i class="bi bi-house<%= typeof title !== 'undefined' && title === 'Feed' ? '-fill' : '' %>"></i>
+      </a>
+      <a href="/match" class="bottom-nav-btn <%= typeof title !== 'undefined' && title === 'Find Matches' ? 'active' : '' %>">
+        <i class="bi bi-heart<%= typeof title !== 'undefined' && title === 'Find Matches' ? '-fill' : '' %>"></i>
+      </a>
+      <a href="/confessions/new" class="bottom-nav-btn">
+        <div class="bottom-nav-post"><i class="bi bi-plus-lg" style="font-size:18px"></i></div>
+      </a>
+      <a href="/chat" class="bottom-nav-btn <%= typeof title !== 'undefined' && title === 'Chat' ? 'active' : '' %>">
+        <i class="bi bi-chat-bubble<%= typeof title !== 'undefined' && title === 'Chat' ? '-fill' : '' %>"></i>
+      </a>
+      <a href="/profile" class="bottom-nav-btn <%= typeof title !== 'undefined' && title === 'My Profile' ? 'active' : '' %>">
+        <div style="width:26px;height:26px;border-radius:50%;background:<%= user.avatar_color||'#7c3aed' %>;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#fff;border:<%= typeof title !== 'undefined' && title === 'My Profile' ? '2px' : '0px' %> solid #fff">
+          <%= user.anon_username.charAt(0) %>
+        </div>
+      </a>
+    </div>
+  </nav>
+  <% } %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <% if (locals.includeSocket) { %><script src="/socket.io/socket.io.js"></script><% } %>
+  <% if (locals.pageScript) { %><script src="/js/<%= pageScript %>"></script><% } %>
+</body>
+</html>

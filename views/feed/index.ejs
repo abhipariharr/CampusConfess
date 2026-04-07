@@ -1,0 +1,261 @@
+<div class="row g-0 g-md-4">
+
+  <!-- ── Main Feed Column ─────────────────────────────── -->
+  <div class="col-lg-7 col-xl-8">
+
+    <!-- Stories Row -->
+    <div class="stories-row px-2 px-md-0">
+      <!-- "Your Story" / Post button -->
+      <div class="story-item" onclick="window.location='/confessions/new'">
+        <div class="story-add">➕</div>
+        <span class="story-label" style="font-size:11px;color:var(--text-2)">Your Story</span>
+      </div>
+      <!-- Placeholder story circles from feed confessions -->
+      <% confessions.slice(0,8).forEach(c => { %>
+      <div class="story-item">
+        <div class="story-ring">
+          <div class="story-ring-inner" style="background:<%= c.avatar_color %>">
+            <%= c.anon_username.charAt(0) %>
+          </div>
+        </div>
+        <span class="story-label"><%= c.anon_username.replace('Anon','').substring(0,8) %></span>
+      </div>
+      <% }) %>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="trending-bar px-2 px-md-0 mt-2 mb-0">
+      <a href="?sort=latest"   class="trending-pill <%= sort==='latest'?'active':'' %>">⚡ Latest</a>
+      <a href="?sort=trending" class="trending-pill <%= sort==='trending'?'active':'' %>">🔥 Trending</a>
+      <span class="trending-pill" style="opacity:.45;cursor:default">💜 For You</span>
+      <span class="trending-pill" style="opacity:.45;cursor:default">😂 Funny</span>
+      <span class="trending-pill" style="opacity:.45;cursor:default">❤️ Love</span>
+      <span class="trending-pill" style="opacity:.45;cursor:default">😤 Rant</span>
+    </div>
+
+    <!-- Empty state -->
+    <% if (confessions.length === 0) { %>
+    <div class="text-center py-5 px-4">
+      <div style="font-size:4rem;margin-bottom:1rem">🤫</div>
+      <h5 class="fw-bold mb-2">Nothing here yet</h5>
+      <p style="color:var(--text-2);margin-bottom:1.5rem">Be the first to drop an anonymous confession.</p>
+      <a href="/confessions/new" class="btn btn-gradient">Drop a Confession ✨</a>
+    </div>
+    <% } %>
+
+    <!-- ── Post Cards ──────────────────────────────── -->
+    <% confessions.forEach(c => {
+      const tagArr = c.tags ? c.tags.split(',').filter(Boolean) : [];
+      const tagEmojis={love:'❤️',rant:'😤',funny:'😂',study:'📚',thoughts:'💭',wholesome:'🥰',advice:'🧠',secret:'🤫',embarrassing:'😳',friendship:'🤝'};
+      const isLiked = likedIds.includes(c.id);
+    %>
+    <div class="post-card" id="confession-<%= c.id %>">
+
+      <!-- Header -->
+      <div class="post-header">
+        <div class="d-flex align-items-center gap-2">
+          <div class="story-ring" style="width:42px;height:42px">
+            <div class="story-ring-inner" style="background:<%= c.avatar_color %>; font-size:.85rem">
+              <%= c.anon_username.charAt(0) %>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;line-height:1.2"><%= c.anon_username %></div>
+            <div style="font-size:12px;color:var(--text-3)">
+              <%= new Date(c.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) %>
+              <% if(tagArr.length){ %> · <span style="color:var(--text-2)"><%= tagArr[0] %></span><% } %>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="post-action-btn" style="font-size:18px;color:var(--text-2)" data-bs-toggle="dropdown">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end glass-dropdown">
+            <li><button class="dropdown-item text-danger report-btn" data-id="<%= c.id %>">🚩 Report</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="post-body">
+        <p class="post-text mb-0"><%= c.content %></p>
+      </div>
+
+      <!-- Tags -->
+      <% if (tagArr.length > 0) { %>
+      <div class="post-tags">
+        <% tagArr.forEach(tag => { %>
+        <span class="badge-tag"><%= tagEmojis[tag] || '' %> #<%= tag %></span>
+        <% }) %>
+      </div>
+      <% } %>
+
+      <!-- ── Action Bar (Instagram Style) ── -->
+      <div class="post-actions">
+        <!-- Like -->
+        <button class="post-action-btn like-btn <%= isLiked ? 'liked' : '' %>"
+                data-id="<%= c.id %>" id="like-btn-<%= c.id %>"
+                aria-label="Like">
+          <i class="bi bi-<%= isLiked ? 'heart-fill' : 'heart' %>"></i>
+        </button>
+        <!-- Comment -->
+        <button class="post-action-btn comment-toggle-btn"
+                data-id="<%= c.id %>" aria-label="Comment">
+          <i class="bi bi-chat-bubble"></i>
+        </button>
+        <!-- Share -->
+        <button class="post-action-btn" aria-label="Share"
+                onclick="navigator.clipboard?.writeText(window.location.origin+'/confessions').then(()=>{this.innerHTML='<i class=\'bi bi-check2\'></i>';setTimeout(()=>this.innerHTML='<i class=\'bi bi-send\'></i>',1500)})">
+          <i class="bi bi-send"></i>
+        </button>
+        <!-- Bookmark (right-aligned) -->
+        <button class="post-action-btn post-bookmark" aria-label="Save">
+          <i class="bi bi-bookmark"></i>
+        </button>
+      </div>
+
+      <!-- Likes count -->
+      <div class="post-likes">
+        <span id="like-count-<%= c.id %>"><%= c.like_count %></span>
+        <%= c.like_count === 1 ? 'like' : 'likes' %>
+      </div>
+
+      <!-- Caption -->
+      <div class="post-caption">
+        <span class="cap-user"><%= c.anon_username %></span>
+        <% if(c.content.length > 120) { %>
+          <span id="cap-short-<%= c.id %>"><%= c.content.substring(0,120) %>... <button onclick="document.getElementById('cap-short-<%= c.id %>').style.display='none';document.getElementById('cap-full-<%= c.id %>').style.display='inline'" style="background:none;border:none;color:var(--text-3);font-size:13px;padding:0">more</button></span>
+          <span id="cap-full-<%= c.id %>" style="display:none"><%= c.content %></span>
+        <% } else { %>
+          <span><%= c.content %></span>
+        <% } %>
+      </div>
+
+      <!-- Comment count link -->
+      <% if (c.comment_count > 0) { %>
+      <div class="post-comment-count comment-toggle-btn" data-id="<%= c.id %>">
+        View all <%= c.comment_count %> comment<%= c.comment_count===1?'':'s' %>
+      </div>
+      <% } %>
+
+      <!-- Time -->
+      <div class="post-time">
+        <%= new Date(c.created_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}).toUpperCase() %>
+      </div>
+
+      <!-- Comment panel (hidden) -->
+      <div class="comment-panel d-none" id="comments-<%= c.id %>">
+        <div class="comment-list" id="comment-list-<%= c.id %>"></div>
+        <div class="comment-input-row">
+          <div class="avatar-sm flex-shrink-0" style="background:<%= user.avatar_color||'#7c3aed' %>;width:28px;height:28px;font-size:.72rem">
+            <%= user.anon_username.charAt(0) %>
+          </div>
+          <input type="text" class="form-control comment-input flex-grow-1" placeholder="Add a comment..." data-id="<%= c.id %>" maxlength="500">
+          <button class="btn btn-gradient btn-sm comment-submit flex-shrink-0" data-id="<%= c.id %>" style="border-radius:6px!important;padding:.3rem .75rem!important;font-size:13px!important">Post</button>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+
+    <!-- Load more -->
+    <% if (confessions.length === 15) { %>
+    <div class="text-center py-4">
+      <a href="?sort=<%= sort %>&page=<%= page+1 %>" class="btn btn-ghost">Load more</a>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- ── Right Sidebar ────────────────────────────────── -->
+  <div class="col-lg-5 col-xl-4 d-none d-lg-block">
+    <div style="position:sticky;top:80px">
+
+      <!-- Current user mini-profile -->
+      <div class="d-flex align-items-center gap-3 mb-4 px-1">
+        <div class="story-ring" style="width:52px;height:52px;flex-shrink:0">
+          <div class="story-ring-inner" style="background:<%= user.avatar_color||'#7c3aed' %>;font-size:1rem">
+            <%= user.anon_username.charAt(0) %>
+          </div>
+        </div>
+        <div class="flex-grow-1">
+          <div style="font-weight:700;font-size:14px"><%= user.anon_username %></div>
+          <div style="font-size:12px;color:var(--text-2)">Anonymous Account 🎭</div>
+        </div>
+        <a href="/confessions/new" style="font-size:13px;font-weight:700;color:#c084fc;text-decoration:none">Confess</a>
+      </div>
+
+      <!-- Suggestions / quick actions -->
+      <div class="sidebar-title">Suggested for you</div>
+      <div class="sidebar-card">
+        <a href="/chat/random" class="sidebar-action-btn" onclick="event.preventDefault();document.getElementById('rndForm').submit()">
+          <span class="emoji">⚡</span> Random Anon Chat
+        </a>
+        <form id="rndForm" action="/chat/random" method="POST" class="d-none"></form>
+        <a href="/match" class="sidebar-action-btn"><span class="emoji">💜</span> Find Interest Matches</a>
+        <a href="/chat" class="sidebar-action-btn"><span class="emoji">💬</span> Browse Chats</a>
+        <a href="/profile" class="sidebar-action-btn"><span class="emoji">✏️</span> Update Interests</a>
+      </div>
+
+      <!-- Community rules -->
+      <div class="sidebar-title mt-3">Community Rules</div>
+      <div style="font-size:13px;color:var(--text-2);line-height:1.8;padding:0 .25rem">
+        <div>✅ Be kind & supportive</div>
+        <div>✅ Keep it anonymous</div>
+        <div>🚫 No personal attacks</div>
+        <div>🚫 No revealing identities</div>
+        <div>🚫 No hate speech</div>
+      </div>
+
+      <div style="margin-top:2rem;font-size:11px;color:var(--text-3);line-height:2">
+        <a href="#" style="color:var(--text-3);text-decoration:none">About</a> ·
+        <a href="#" style="color:var(--text-3);text-decoration:none">Privacy</a> ·
+        <a href="#" style="color:var(--text-3);text-decoration:none">Safety</a> ·
+        <a href="#" style="color:var(--text-3);text-decoration:none">Terms</a>
+        <div style="margin-top:.5rem">© 2026 CampusWhisper</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:#1c1c1c;border:1px solid var(--border);border-radius:16px">
+      <div class="modal-body p-4">
+        <h6 class="fw-bold mb-3">🚩 Report this post?</h6>
+        <input type="hidden" id="reportConfessionId">
+        <div class="d-grid gap-2">
+          <% ['Hate speech','Harassment','Spam','Inappropriate content','Misinformation'].forEach(r => { %>
+          <button class="report-reason-btn btn btn-ghost text-start" style="border-radius:10px!important" data-reason="<%= r %>"><%= r %></button>
+          <% }) %>
+        </div>
+        <button class="btn btn-ghost w-100 mt-3" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Report modal with direct reason selection
+const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+let activeReportId = null;
+document.querySelectorAll('.report-btn').forEach(btn => {
+  btn.addEventListener('click', () => { activeReportId = btn.dataset.id; reportModal.show(); });
+});
+document.querySelectorAll('.report-reason-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    if (!activeReportId) return;
+    await fetch(`/confessions/${activeReportId}/report`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason:btn.dataset.reason})});
+    reportModal.hide();
+    showToast('Report submitted ✓');
+    activeReportId = null;
+  });
+});
+function showToast(msg) {
+  const el = document.createElement('div');
+  el.className='alert alert-float alert-success alert-dismissible d-flex align-items-center gap-2';
+  el.innerHTML=`<i class="bi bi-check-circle-fill"></i><span>${msg}</span><button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),3000);
+}
+</script>

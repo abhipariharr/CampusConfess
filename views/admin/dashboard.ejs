@@ -1,0 +1,170 @@
+<div class="mb-4 d-flex align-items-center gap-3">
+  <div>
+    <h2 class="fw-bold mb-1"><i class="bi bi-shield-check me-2 text-warning"></i>Admin Dashboard</h2>
+    <p class="text-muted small">Platform safety & moderation panel. Visible to admins only.</p>
+  </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card p-3 text-center">
+      <div class="display-6 fw-bold gradient-text"><%= stats.total_users %></div>
+      <div class="text-muted small">Total Users</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card p-3 text-center">
+      <div class="display-6 fw-bold gradient-text"><%= stats.total_confessions %></div>
+      <div class="text-muted small">Confessions</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card p-3 text-center">
+      <div class="display-6 fw-bold" style="color:#f59e0b"><%= stats.pending_reports %></div>
+      <div class="text-muted small">Pending Reports</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card p-3 text-center">
+      <div class="display-6 fw-bold" style="color:#ef4444"><%= stats.banned_users %></div>
+      <div class="text-muted small">Banned Users</div>
+    </div>
+  </div>
+</div>
+
+<ul class="nav nav-tabs nav-dark mb-4" id="adminTabs">
+  <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-reports">Reports <span class="badge bg-warning text-dark ms-1"><%= stats.pending_reports %></span></a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-users">Users</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-logs">Activity Logs <span class="badge bg-secondary ms-1">7-day</span></a></li>
+</ul>
+
+<div class="tab-content">
+  <!-- Reports Tab -->
+  <div class="tab-pane fade show active" id="tab-reports">
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table admin-table mb-0">
+          <thead><tr><th>ID</th><th>Reporter</th><th>Content</th><th>Reason</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody>
+          <% if (reports.length === 0) { %>
+          <tr><td colspan="7" class="text-center text-muted py-4">No reports yet 🎉</td></tr>
+          <% } %>
+          <% reports.forEach(r => { %>
+          <tr id="report-row-<%= r.id %>">
+            <td class="text-muted">#<%= r.id %></td>
+            <td><%= r.reporter_anon %></td>
+            <td class="text-muted" style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><%= r.confession_content || '—' %></td>
+            <td><span class="badge bg-dark border brd"><%= r.reason %></span></td>
+            <td>
+              <span class="badge <%= r.status==='pending'?'bg-warning text-dark':r.status==='reviewed'?'bg-success':'bg-secondary' %>">
+                <%= r.status %>
+              </span>
+            </td>
+            <td class="text-muted small"><%= new Date(r.created_at).toLocaleDateString() %></td>
+            <td>
+              <% if (r.status === 'pending') { %>
+              <button class="btn btn-xs btn-outline-success me-1 review-report" data-id="<%= r.id %>" data-status="reviewed">✓ Review</button>
+              <button class="btn btn-xs btn-outline-secondary dismiss-report" data-id="<%= r.id %>" data-status="dismissed">Dismiss</button>
+              <% } %>
+            </td>
+          </tr>
+          <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users Tab -->
+  <div class="tab-pane fade" id="tab-users">
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table admin-table mb-0">
+          <thead><tr><th>ID</th><th>Real Name</th><th>Anonymous Username</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody>
+          <% users.forEach(u => { %>
+          <tr id="user-row-<%= u.id %>">
+            <td class="text-muted">#<%= u.id %></td>
+            <td class="fw-medium"><%= u.real_name %></td>
+            <td><%= u.anon_username %></td>
+            <td class="text-muted small"><%= u.email %></td>
+            <td><span class="badge <%= u.role==='admin'?'bg-warning text-dark':'bg-secondary' %>"><%= u.role %></span></td>
+            <td><span class="badge <%= u.is_banned?'bg-danger':'bg-success' %>"><%= u.is_banned?'Banned':'Active' %></span></td>
+            <td class="text-muted small"><%= new Date(u.created_at).toLocaleDateString() %></td>
+            <td>
+              <% if (u.role !== 'admin') { %>
+              <% if (!u.is_banned) { %>
+              <button class="btn btn-xs btn-outline-danger ban-btn" data-id="<%= u.id %>">Ban</button>
+              <% } else { %>
+              <button class="btn btn-xs btn-outline-success unban-btn" data-id="<%= u.id %>">Unban</button>
+              <% } %>
+              <% } %>
+            </td>
+          </tr>
+          <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logs Tab -->
+  <div class="tab-pane fade" id="tab-logs">
+    <div class="alert" style="background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);border-radius:12px">
+      <i class="bi bi-clock-history me-2 text-warning"></i>
+      <span class="small text-muted">Logs auto-delete after <strong class="text-light">7 days</strong> to protect user privacy.</span>
+    </div>
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table admin-table mb-0">
+          <thead><tr><th>Admin</th><th>Action</th><th>Target</th><th>Details</th><th>Date</th><th>Expires</th></tr></thead>
+          <tbody>
+          <% if (logs.length === 0) { %>
+          <tr><td colspan="6" class="text-center text-muted py-4">No logs yet.</td></tr>
+          <% } %>
+          <% logs.forEach(l => { %>
+          <tr>
+            <td class="fw-medium"><%= l.admin_username || '—' %></td>
+            <td><span class="badge bg-dark border brd"><%= l.action %></span></td>
+            <td class="text-muted"><%= l.target_username || '—' %></td>
+            <td class="text-muted small"><%= l.details || '—' %></td>
+            <td class="text-muted small"><%= new Date(l.created_at).toLocaleString() %></td>
+            <td class="text-muted small"><%= new Date(l.expires_at).toLocaleDateString() %></td>
+          </tr>
+          <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function adminAction(url, method='POST') {
+  const r = await fetch(url, { method, headers:{'Content-Type':'application/json'} });
+  return r.json();
+}
+
+document.querySelectorAll('.ban-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    if (!confirm('Ban this user?')) return;
+    const res = await adminAction(`/admin/ban/${btn.dataset.id}`);
+    if (res.success) { btn.closest('tr').querySelector('.badge').className='badge bg-danger'; btn.textContent='Unban'; btn.className='btn btn-xs btn-outline-success unban-btn'; location.reload(); }
+  });
+});
+
+document.querySelectorAll('.unban-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const res = await adminAction(`/admin/unban/${btn.dataset.id}`);
+    if (res.success) location.reload();
+  });
+});
+
+document.querySelectorAll('.review-report, .dismiss-report').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const res = await adminAction(`/admin/report/${btn.dataset.id}/review`, 'POST');
+    if (res.success) location.reload();
+  });
+});
+</script>

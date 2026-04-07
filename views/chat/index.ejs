@@ -1,0 +1,55 @@
+<%
+  const inRoom = typeof room !== 'undefined' && room;
+%>
+<% if (!inRoom) { %>
+<div class="row g-4">
+  <div class="col-12">
+    <h2 class="fw-bold mb-1"><i class="bi bi-chat-dots me-2 text-accent"></i>Anonymous Chat</h2>
+    <p class="text-muted small">Chat anonymously. Reveal only when you both agree.</p>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 p-4">
+      <h5 class="fw-bold mb-3"><i class="bi bi-shuffle me-2 gradient-text"></i>Random Chat</h5>
+      <p class="text-muted small">Match with a random anonymous student instantly.</p>
+      <form action="/chat/random" method="POST" class="mt-auto">
+        <button type="submit" class="btn btn-gradient w-100"><i class="bi bi-lightning me-2"></i>Find Random Partner</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 p-4">
+      <h5 class="fw-bold mb-3"><i class="bi bi-tags me-2 gradient-text"></i>Interest-Based Chat</h5>
+      <p class="text-muted small">Connect with someone who shares your vibe.</p>
+      <form action="/chat/interest" method="POST" class="mt-auto">
+        <select name="interest" class="form-select mb-3" required>
+          <option value="" disabled selected>Select an interest...</option>
+          <% interests.forEach(i => { %><option value="<%= i %>"><%= i.charAt(0).toUpperCase()+i.slice(1) %></option><% }) %>
+        </select>
+        <button type="submit" class="btn btn-gradient w-100"><i class="bi bi-heart-pulse me-2"></i>Find Match</button>
+      </form>
+    </div>
+  </div>
+  <% if (rooms && rooms.length > 0) { %>
+  <div class="col-12">
+    <h5 class="fw-semibold mb-3">Your Active Chats</h5>
+    <div class="row g-3">
+      <% rooms.forEach(r => { %>
+      <div class="col-md-4">
+        <a href="/chat/<%= r.room_code %>" class="text-decoration-none">
+          <div class="card p-3 hover-card">
+            <div class="d-flex gap-2 align-items-center">
+              <div class="avatar-sm" style="background:var(--accent-purple)"><i class="bi bi-chat-fill" style="font-size:.9rem"></i></div>
+              <div>
+                <div class="fw-semibold text-sm"><%= r.anon_label %></div>
+                <div class="text-muted" style="font-size:.72rem"><%= r.room_type %> · <%= r.msg_count %> msgs</div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+  <% } %>
+</div>
+<% } %>

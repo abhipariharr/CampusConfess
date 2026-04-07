@@ -1,0 +1,14 @@
+<% if (locals.success) { %>
+<div class="alert-float alert alert-success alert-dismissible d-flex align-items-center gap-2 shadow" role="alert">
+  <i class="bi bi-check-circle-fill"></i>
+  <span><%= success %></span>
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<% } %>
+<% if (locals.error) { %>
+<div class="alert-float alert alert-danger alert-dismissible d-flex align-items-center gap-2 shadow" role="alert">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  <span><%= error %></span>
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<% } %>
