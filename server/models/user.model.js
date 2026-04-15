@@ -11,10 +11,10 @@ const UserModel = {
     return rows[0] || null;
   },
 
-  async create({ email, password_hash, real_name, anon_username, avatar_color }) {
+  async create({ email, password_hash, real_name, anon_username, avatar_color, gender }) {
     const [result] = await db.query(
-      'INSERT INTO users (email, password_hash, real_name, anon_username, avatar_color) VALUES (?,?,?,?,?)',
-      [email, password_hash, real_name, anon_username, avatar_color || '#7c3aed']
+      'INSERT INTO users (email, password_hash, real_name, anon_username, avatar_color, gender) VALUES (?,?,?,?,?,?)',
+      [email, password_hash, real_name, anon_username, avatar_color || '#7c3aed', gender]
     );
     return result.insertId;
   },
@@ -23,8 +23,13 @@ const UserModel = {
     await db.query('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash, userId]);
   },
 
-  async updateProfile(userId, { bio }) {
-    await db.query('UPDATE users SET bio = ? WHERE id = ?', [bio, userId]);
+  async updateProfile(userId, { bio, gender }) {
+    if (bio !== undefined) {
+      await db.query('UPDATE users SET bio = ? WHERE id = ?', [bio, userId]);
+    }
+    if (gender !== undefined) {
+      await db.query('UPDATE users SET gender = ? WHERE id = ?', [gender || null, userId]);
+    }
   },
 
   async getInterests(userId) {

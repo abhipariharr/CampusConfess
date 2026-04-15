@@ -4,27 +4,42 @@ const { getChatLabel }  = require('../utils/anonName');
 
 const ChatModel = {
   async findOrCreateRoom({ type = 'random', interest = null, userId }) {
+    // Get current user's gender for opposite-gender matching
+    const [userRows] = await db.query('SELECT gender FROM users WHERE id = ?', [userId]);
+    const userGender = userRows[0]?.gender;
+
     // Look for a waiting room of this type with 1 participant (not the current user)
+    // For random chat, also filter by opposite gender
     let query = `
       SELECT cr.id, cr.room_code FROM chat_rooms cr
       JOIN chat_participants cp ON cr.id = cp.room_id
+      JOIN users u ON cp.user_id = u.id
       WHERE cr.room_type = ? AND cr.is_active = 1
         AND cp.user_id != ?
         AND (SELECT COUNT(*) FROM chat_participants WHERE room_id = cr.id) = 1
-      LIMIT 1
     `;
     const params = [type, userId];
+
+    // Opposite gender filter for random chat
+    if (type === 'random' && userGender && ['male', 'female'].includes(userGender)) {
+      const oppositeGender = userGender === 'male' ? 'female' : 'male';
+      query += ' AND u.gender = ?';
+      params.push(oppositeGender);
+    }
+
     if (type === 'interest' && interest) {
       query = `
         SELECT cr.id, cr.room_code FROM chat_rooms cr
         JOIN chat_participants cp ON cr.id = cp.room_id
+        JOIN users u ON cp.user_id = u.id
         WHERE cr.room_type = 'interest' AND cr.interest_tag = ? AND cr.is_active = 1
           AND cp.user_id != ?
           AND (SELECT COUNT(*) FROM chat_participants WHERE room_id = cr.id) = 1
-        LIMIT 1
       `;
       params.unshift(interest);
     }
+
+    query += ' LIMIT 1';
 
     const [waiting] = await db.query(query, params);
     if (waiting.length > 0) {

@@ -24,8 +24,10 @@ router.post('/', requireAuth, [
   body('bio').optional().trim().isLength({ max: 300 }),
 ], async (req, res) => {
   try {
-    const { bio, interests } = req.body;
-    await UserModel.updateProfile(req.session.user.id, { bio: bio || '' });
+    const { bio, gender, interests } = req.body;
+    await UserModel.updateProfile(req.session.user.id, { bio: bio || '', gender: gender || null });
+    // Update session with new gender
+    req.session.user.gender = gender || null;
     const interestArr = Array.isArray(interests) ? interests : (interests ? [interests] : []);
     await UserModel.setInterests(req.session.user.id, interestArr.slice(0, 10));
     req.session.success = 'Profile updated!';
