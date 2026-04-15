@@ -36,7 +36,7 @@ router.post('/login', redirectIfAuth, loginRateLimit, [
       req.session.error = 'Your account has been suspended. Contact support.';
       return res.redirect('/login');
     }
-    req.session.user = { id: user.id, anon_username: user.anon_username, role: user.role, avatar_color: user.avatar_color };
+    req.session.user = { id: user.id, anon_username: user.anon_username, role: user.role, avatar_color: user.avatar_color, gender: user.gender };
     if (remember_me) req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000;
     res.redirect('/confessions');
   } catch (err) {
@@ -55,6 +55,7 @@ router.get('/signup', redirectIfAuth, (req, res) => {
 router.post('/signup', redirectIfAuth, signupRateLimit, [
   body('real_name').trim().isLength({ min: 2, max: 80 }).withMessage('Full name must be 2-80 characters.'),
   body('email').isEmail().normalizeEmail().withMessage('Valid email required.'),
+  body('gender').isIn(['male', 'female', 'other']).withMessage('Please select a valid gender.'),
   body('password')
     .isLength({ min: 8 }).withMessage('Password must be at least 8 characters.')
     .matches(/[A-Z]/).withMessage('Password must contain an uppercase letter.')
@@ -70,7 +71,7 @@ router.post('/signup', redirectIfAuth, signupRateLimit, [
     return res.redirect('/signup');
   }
   try {
-    const { real_name, email, password } = req.body;
+    const { real_name, email, password, gender } = req.body;
     if (await UserModel.emailExists(email)) {
       req.session.error = 'An account with this email already exists.';
       return res.redirect('/signup');
@@ -80,7 +81,7 @@ router.post('/signup', redirectIfAuth, signupRateLimit, [
     const anon_username  = await generateAnonUsername(db);
     const colors = ['#7c3aed','#06b6d4','#ec4899','#f59e0b','#10b981'];
     const avatar_color   = colors[Math.floor(Math.random() * colors.length)];
-    const userId = await UserModel.create({ email, password_hash, real_name, anon_username, avatar_color });
+    const userId = await UserModel.create({ email, password_hash, real_name, anon_username, avatar_color, gender });
     req.session.user = { id: userId, anon_username, role: 'user', avatar_color };
     req.session.success = `Welcome, ${anon_username}! Your anonymous account is ready.`;
     res.redirect('/confessions');
