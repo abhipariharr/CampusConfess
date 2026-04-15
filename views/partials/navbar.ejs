@@ -27,11 +27,21 @@
         </a>
         <% } %>
 
-        <!-- Search icon (decorative on desktop) -->
+        <!-- Search button -->
         <button class="d-flex align-items-center justify-content-center border-0"
+                id="searchToggle"
                 style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);color:var(--text-2)">
           <i class="bi bi-search" style="font-size:14px"></i>
         </button>
+        <!-- Search dropdown -->
+        <div class="dropdown-menu dropdown-menu-end glass-dropdown mt-2 p-0" id="searchDropdown" style="width:300px;display:none">
+          <form action="/confessions" method="GET" class="p-2">
+            <div class="input-group">
+              <input type="text" name="search" class="form-control" placeholder="Search confessions..." id="searchInput" autocomplete="off">
+              <button type="submit" class="btn btn-gradient"><i class="bi bi-search"></i></button>
+            </div>
+          </form>
+        </div>
 
         <!-- Avatar dropdown -->
         <div class="dropdown">
@@ -72,3 +82,17 @@
     </div>
   </div>
 </nav>
+
+<script>
+document.getElementById('searchToggle').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const dropdown = document.getElementById('searchDropdown');
+  const isOpen = dropdown.style.display !== 'none';
+  dropdown.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) document.getElementById('searchInput').focus();
+});
+document.addEventListener('click', () => {
+  document.getElementById('searchDropdown').style.display = 'none';
+});
+document.getElementById('searchDropdown').addEventListener('click', (e) => e.stopPropagation());
+</script>
