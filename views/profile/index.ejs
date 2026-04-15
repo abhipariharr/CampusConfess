@@ -51,6 +51,17 @@
       <form action="/profile" method="POST" id="profileForm">
 
         <div class="mb-3">
+          <label for="gender" class="form-label">Gender</label>
+          <select id="gender" name="gender" class="form-control">
+            <option value="" <%= !user.gender ? 'selected' : '' %>>Prefer not to say</option>
+            <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Male</option>
+            <option value="female" <%= user.gender === 'female' ? 'selected' : '' %>>Female</option>
+            <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Other</option>
+          </select>
+          <div style="font-size:11px;color:var(--text-3);margin-top:.35rem">Used for opposite-gender random chat matching</div>
+        </div>
+
+        <div class="mb-3">
           <label for="bio" class="form-label">Bio <span style="color:var(--text-3);font-weight:400">(no identifying info)</span></label>
           <textarea id="bio" name="bio" class="form-control" rows="2" maxlength="300"
             placeholder="Something about you, anonymously..."><%= user.bio || '' %></textarea>
