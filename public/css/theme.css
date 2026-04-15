@@ -156,7 +156,7 @@ h1,h2,h3,h4,h5,h6 {
 
 @media (max-width: 768px) {
   .bottom-nav  { display: block; }
-  main         { padding-bottom: 70px !important; }
+  main         { padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom))) !important; }
 }
 
 /* ─── Dropdown ────────────────────────────────────────── */
