@@ -35,7 +35,12 @@ const dbOptions = {
   ssl: { rejectUnauthorized: false }
 };
 
-const sessionStore = new MySQLStore(dbOptions);
+const sessionStore = new MySQLStore({
+  ...dbOptions,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 const sessionMiddleware = session({
   key:               'cw_sid',
