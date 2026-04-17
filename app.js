@@ -22,14 +22,19 @@ app.use(express.urlencoded({ extended: true }));
 // ─── Static Files ─────────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 // ─── Session ──────────────────────────────────────────────────────────────────
+app.set('trust proxy', 1);
+
 const dbOptions = {
   host:     process.env.DB_HOST     || 'localhost',
   port:     parseInt(process.env.DB_PORT) || 3306,
   user:     process.env.DB_USER     || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME     || 'campuswhisper',
+  ssl: { rejectUnauthorized: false }
 };
+
 const sessionStore = new MySQLStore(dbOptions);
 
 const sessionMiddleware = session({
@@ -38,7 +43,12 @@ const sessionMiddleware = session({
   store:             sessionStore,
   resave:            false,
   saveUninitialized: false,
-  cookie: { httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 },
+  cookie: {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  },
 });
 app.use(sessionMiddleware);
 
