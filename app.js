@@ -26,30 +26,32 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ─── Session ──────────────────────────────────────────────────────────────────
 app.set('trust proxy', 1);
 
-const dbOptions = {
+// 🔹 DB config for session (NO SSL here)
+const sessionDbOptions = {
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT),
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  ssl: { rejectUnauthorized: false }
+  database: process.env.DB_NAME
 };
 
-const sessionStore = new MySQLStore(dbOptions);
+// 🔹 Session store
+const sessionStore = new MySQLStore(sessionDbOptions);
 
 const sessionMiddleware = session({
-  key:               'cw_sid',
-  secret:            process.env.SESSION_SECRET || 'campuswhisper-dev-secret',
-  store:             sessionStore,
-  resave:            false,
+  key: 'cw_sid',
+  secret: process.env.SESSION_SECRET || 'secret',
+  store: sessionStore,
+  resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
     secure: true,
     sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000
-  },
+  }
 });
+
 app.use(sessionMiddleware);
 
 // Share session with Socket.io
