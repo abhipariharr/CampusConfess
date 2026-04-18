@@ -67,7 +67,7 @@ app.use(session({
   }
 }));
 
-app.use(sessionMiddleware);
+
 
 // Share session with Socket.io
 // io.use((socket, next) => sessionMiddleware(socket.request, {}, next));
