@@ -81,6 +81,23 @@
     scrollBottom();
   });
 
+  // ─── Real-time Notifications ─────────────────────────────────────────
+  socket.on('new_notification', ({ notification }) => {
+    // Update badge in navbar if present
+    const badge = document.getElementById('notifBadge');
+    if (badge) {
+      const count = (parseInt(badge.textContent) || 0) + 1;
+      badge.textContent = count;
+      badge.style.display = 'block';
+    }
+    // If notification dropdown is open, refresh the list
+    const notifList = document.getElementById('notifList');
+    const notifDropdown = document.getElementById('notifDropdown');
+    if (notifList && notifDropdown && notifDropdown.style.display === 'block') {
+      socket.emit('get_notifications');
+    }
+  });
+
   // ─── Reveal System ───────────────────────────────────────
   revealBtn && revealBtn.addEventListener('click', async () => {
     revealBtn.disabled = true;

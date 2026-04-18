@@ -135,4 +135,33 @@ router.post('/:roomCode/report', requireAuth, async (req, res) => {
   }
 });
 
+// ─── GET /notifications ────────────────────────────────────────────────────────
+router.get('/notifications', requireAuth, async (req, res) => {
+  try {
+    const NotificationModel = require('../models/notification.model');
+    const notifications = await NotificationModel.getForUser(req.session.user.id);
+    const unreadCount = await NotificationModel.getUnreadCount(req.session.user.id);
+    res.json({ notifications, unreadCount });
+  } catch (err) {
+    console.error('Notifications error:', err);
+    res.status(500).json({ error: 'Failed to load notifications.' });
+  }
+});
+
+// ─── POST /notifications/read ─────────────────────────────────────────────────
+router.post('/notifications/read', requireAuth, async (req, res) => {
+  try {
+    const NotificationModel = require('../models/notification.model');
+    const { ids } = req.body;
+    if (ids && ids.length) {
+      await NotificationModel.markRead(ids, req.session.user.id);
+    } else {
+      await NotificationModel.markAllRead(req.session.user.id);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to mark as read.' });
+  }
+});
+
 module.exports = router;

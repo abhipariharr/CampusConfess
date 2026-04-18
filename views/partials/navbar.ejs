@@ -43,6 +43,24 @@
           </form>
         </div>
 
+        <!-- Notification bell -->
+        <button class="d-flex align-items-center justify-content-center border-0 position-relative"
+                id="notifBell"
+                style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);color:var(--text-2)">
+          <i class="bi bi-bell" style="font-size:14px"></i>
+          <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="font-size:10px;display:none">0</span>
+        </button>
+        <!-- Notification dropdown -->
+        <div class="dropdown-menu dropdown-menu-end glass-dropdown mt-2 p-0" id="notifDropdown"
+             style="width:320px;max-height:400px;overflow-y:auto;display:none">
+          <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom" style="border-color:var(--border)">
+            <span style="font-weight:700;font-size:14px">Notifications</span>
+            <button class="btn btn-link p-0 text-decoration-none" id="markAllRead" style="font-size:12px;color:var(--accent)">Mark all read</button>
+          </div>
+          <div id="notifList"></div>
+        </div>
+
         <!-- Avatar dropdown -->
         <div class="dropdown">
           <button class="d-flex align-items-center gap-0 border-0 bg-transparent p-0" style="cursor:pointer" data-bs-toggle="dropdown">
@@ -95,4 +113,122 @@ document.addEventListener('click', () => {
   document.getElementById('searchDropdown').style.display = 'none';
 });
 document.getElementById('searchDropdown').addEventListener('click', (e) => e.stopPropagation());
+
+// ─── Notifications ──────────────────────────────────────────────────────────
+const notifBell = document.getElementById('notifBell');
+const notifDropdown = document.getElementById('notifDropdown');
+const notifBadge = document.getElementById('notifBadge');
+const notifList = document.getElementById('notifList');
+
+notifBell && notifBell.addEventListener('click', (e) => {
+  e.stopPropagation();
+  notifDropdown.style.display = notifDropdown.style.display !== 'none' ? 'none' : 'block';
+  if (notifDropdown.style.display === 'block') {
+    document.getElementById('searchDropdown').style.display = 'none';
+    socket.emit('get_notifications');
+  }
+});
+document.addEventListener('click', () => { notifDropdown.style.display = 'none'; });
+notifDropdown && notifDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+// Socket listeners
+if (typeof socket !== 'undefined') {
+  socket.on('notifications', ({ notifications }) => {
+    renderNotifications(notifications);
+  });
+
+  socket.on('new_notification', ({ notification }) => {
+    const badge = document.getElementById('notifBadge');
+    const count = parseInt(badge.textContent) || 0;
+    badge.textContent = count + 1;
+    badge.style.display = 'block';
+    // Prepend to list
+    const item = createNotifItem(notification);
+    if (notifList.firstChild) {
+      notifList.insertBefore(item, notifList.firstChild);
+    } else {
+      notifList.appendChild(item);
+    }
+  });
+
+  socket.on('notifications_read', ({ ids }) => {
+    document.querySelectorAll('.notif-item.unread').forEach(el => {
+      if (ids.includes(parseInt(el.dataset.id))) el.classList.remove('unread');
+    });
+    updateBadge();
+  });
+}
+
+document.getElementById('markAllRead')?.addEventListener('click', () => {
+  const ids = [...notifList.querySelectorAll('.notif-item.unread')].map(el => parseInt(el.dataset.id));
+  socket.emit('mark_read', { ids });
+  notifList.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+  updateBadge();
+});
+
+function renderNotifications(notifications) {
+  notifList.innerHTML = '';
+  if (!notifications || notifications.length === 0) {
+    notifList.innerHTML = '<div class="text-center text-muted py-4" style="font-size:13px">No notifications yet</div>';
+    return;
+  }
+  notifications.forEach(n => notifList.appendChild(createNotifItem(n)));
+  updateBadge();
+}
+
+function createNotifItem(n) {
+  const div = document.createElement('div');
+  div.className = `notif-item d-flex align-items-start gap-2 px-3 py-2 border-bottom${n.is_read ? '' : ' unread'}`;
+  div.style.cssText = n.is_read ? 'border-color:var(--border);cursor:pointer' : 'background:rgba(124,58,237,.08);border-color:var(--border);cursor:pointer';
+  div.dataset.id = n.id;
+
+  const iconMap = {
+    message: 'bi-chat-dots',
+    reveal_request: 'bi-eye',
+    reveal_accepted: 'bi-check-circle',
+    chat_invite: 'bi-chat-quote',
+  };
+  const icon = iconMap[n.type] || 'bi-bell';
+
+  div.innerHTML = `
+    <div class="d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:32px;height:32px;border-radius:50%;background:rgba(124,58,237,.15);color:var(--accent)">
+      <i class="bi ${icon}" style="font-size:14px"></i>
+    </div>
+    <div class="flex-grow-1" style="min-width:0">
+      <div style="font-size:13px;line-height:1.4">${escHtml(n.content)}</div>
+      <div style="font-size:11px;color:var(--text-3)">${timeAgo(n.created_at)}</div>
+    </div>
+  `;
+  div.addEventListener('click', () => {
+    if (!n.is_read) {
+      socket.emit('mark_read', { ids: [n.id] });
+      div.classList.remove('unread');
+      div.style.background = '';
+      updateBadge();
+    }
+    if (n.link) window.location.href = n.link;
+  });
+  return div;
+}
+
+function updateBadge() {
+  const unread = notifList.querySelectorAll('.notif-item.unread').length;
+  notifBadge.textContent = unread;
+  notifBadge.style.display = unread > 0 ? 'block' : 'none';
+}
+
+function timeAgo(dateStr) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diff = Math.floor((now - date) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+  return `${Math.floor(diff/86400)}d ago`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 </script>

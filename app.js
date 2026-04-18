@@ -54,23 +54,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('trust proxy', 1);
 
-app.use(session({
+const sessionMiddleware = session({
   key: 'cw_sid',
   secret: process.env.SESSION_SECRET || 'secret',
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000
   }
-}));
+});
 
-
+app.use(sessionMiddleware);
 
 // Share session with Socket.io
-// io.use((socket, next) => sessionMiddleware(socket.request, {}, next));
+io.use((socket, next) => sessionMiddleware(socket.request, {}, next));
 
 // ─── View Engine ──────────────────────────────────────────────────────────────
 app.set('view engine', 'ejs');
