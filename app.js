@@ -70,7 +70,7 @@ app.use(session({
 app.use(sessionMiddleware);
 
 // Share session with Socket.io
-io.use((socket, next) => sessionMiddleware(socket.request, {}, next));
+// io.use((socket, next) => sessionMiddleware(socket.request, {}, next));
 
 // ─── View Engine ──────────────────────────────────────────────────────────────
 app.set('view engine', 'ejs');
