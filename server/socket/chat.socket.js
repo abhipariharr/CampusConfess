@@ -214,6 +214,36 @@ module.exports = function (io) {
       socket.to(roomCode).emit('user_typing', { isTyping });
     });
 
+    // ─── Get Unread Chat Count ───────────────────────────────────────────────
+    socket.on('get_chat_unread_count', async () => {
+      try {
+        const [[{ cnt }]] = await db.query(
+          `SELECT COUNT(*) AS cnt FROM notifications
+           WHERE user_id = ? AND type = 'message' AND is_read = 0`,
+          [userId]
+        );
+        socket.emit('chat_unread_count', { count: cnt || 0 });
+      } catch (err) {
+        console.error('get_chat_unread_count error:', err);
+      }
+    });
+
+    // ─── Mark Messages Read ──────────────────────────────────────────────────
+    socket.on('mark_messages_read', async ({ roomCode }) => {
+      try {
+        await db.query(
+          `UPDATE notifications SET is_read = 1
+           WHERE user_id = ? AND type = 'message' AND link = ?`,
+          [userId, `/chat/${roomCode}`]
+        );
+        socket.emit('messages_read', { roomCode });
+        // Notify partner that messages were read
+        socket.to(roomCode).emit('partner_messages_read');
+      } catch (err) {
+        console.error('mark_messages_read error:', err);
+      }
+    });
+
     // ─── Fetch Notifications ─────────────────────────────────────────────────
     socket.on('get_notifications', async () => {
       try {

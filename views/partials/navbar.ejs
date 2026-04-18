@@ -133,6 +133,9 @@ notifDropdown && notifDropdown.addEventListener('click', (e) => e.stopPropagatio
 
 // Socket listeners
 if (typeof socket !== 'undefined') {
+  // Request unread chat count on connect
+  socket.emit('get_chat_unread_count');
+
   socket.on('notifications', ({ notifications }) => {
     renderNotifications(notifications);
   });
@@ -156,6 +159,39 @@ if (typeof socket !== 'undefined') {
       if (ids.includes(parseInt(el.dataset.id))) el.classList.remove('unread');
     });
     updateBadge();
+  });
+
+  // ─── Chat badge ──────────────────────────────────────────────────────────
+  const chatBadge = document.getElementById('chatBadge');
+  let chatUnreadCount = 0;
+
+  socket.on('chat_unread_count', ({ count }) => {
+    chatUnreadCount = count;
+    if (chatBadge) {
+      chatBadge.textContent = count;
+      chatBadge.style.display = count > 0 ? 'block' : 'none';
+    }
+  });
+
+  socket.on('new_message', ({ roomCode, isMine }) => {
+    if (!isMine && chatBadge) {
+      // Don't increment if user is currently viewing this room
+      if (window.currentRoomCode && window.currentRoomCode !== roomCode) {
+        chatUnreadCount++;
+        chatBadge.textContent = chatUnreadCount;
+        chatBadge.style.display = 'block';
+      }
+    }
+  });
+
+  socket.on('messages_read', ({ roomCode }) => {
+    if (window.currentRoomCode === roomCode) {
+      chatUnreadCount = 0;
+      if (chatBadge) {
+        chatBadge.textContent = '0';
+        chatBadge.style.display = 'none';
+      }
+    }
   });
 }
 

@@ -15,8 +15,14 @@
 
   let typingTimer;
 
+  // ─── Set current room for navbar badge ────────────────────
+  window.currentRoomCode = window.ROOM_CODE;
+
   // ─── Join room ────────────────────────────────────────────
   socket.emit('join_room', { roomCode: window.ROOM_CODE });
+
+  // Mark messages as read when viewing this room
+  socket.emit('mark_messages_read', { roomCode: window.ROOM_CODE });
 
   socket.on('room_joined', ({ participantCount }) => {
     if (participantCount >= 2) {
