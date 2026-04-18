@@ -3,7 +3,7 @@ const express         = require('express');
 const http            = require('http');
 const { Server }      = require('socket.io');
 const session         = require('express-session');
-const MySQLStore      = require('express-mysql-session')(session);
+// const MySQLStore      = require('express-mysql-session')(session);
 const helmet          = require('helmet');
 const path            = require('path');
 const expressLayouts  = require('express-ejs-layouts');
@@ -24,24 +24,39 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // ─── Session ──────────────────────────────────────────────────────────────────
+// app.set('trust proxy', 1);
+
+// // 🔹 DB config for session (NO SSL here)
+// const sessionDbOptions = {
+//   host: process.env.DB_HOST,
+//   port: parseInt(process.env.DB_PORT),
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME
+// };
+
+// // 🔹 Session store
+// const sessionStore = new MySQLStore(sessionDbOptions);
+
+// const sessionMiddleware = session({
+//   key: 'cw_sid',
+//   secret: process.env.SESSION_SECRET || 'secret',
+//   store: sessionStore,
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: {
+//     httpOnly: true,
+//     secure: true,
+//     sameSite: "none",
+//     maxAge: 7 * 24 * 60 * 60 * 1000
+//   }
+// });
+
 app.set('trust proxy', 1);
 
-// 🔹 DB config for session (NO SSL here)
-const sessionDbOptions = {
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-};
-
-// 🔹 Session store
-const sessionStore = new MySQLStore(sessionDbOptions);
-
-const sessionMiddleware = session({
+app.use(session({
   key: 'cw_sid',
   secret: process.env.SESSION_SECRET || 'secret',
-  store: sessionStore,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -50,7 +65,7 @@ const sessionMiddleware = session({
     sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000
   }
-});
+}));
 
 app.use(sessionMiddleware);
 
