@@ -31,12 +31,14 @@ router.get('/', requireAdmin, async (req, res) => {
         (SELECT COUNT(*) FROM reports WHERE status='pending') AS pending_reports,
         (SELECT COUNT(*) FROM users WHERE is_banned=1) AS banned_users
     `);
+    const confessions = await ConfessionModel.getAllForAdmin();
     res.render('admin/dashboard', {
       title: 'Admin Panel',
       users,
       reports,
       logs,
       stats: stats[0],
+      confessions,
     });
   } catch (err) {
     console.error('Admin dashboard error:', err);
@@ -82,11 +84,23 @@ router.post('/report/:id/review', requireAdmin, async (req, res) => {
 // ─── DELETE /admin/confession/:id ─────────────────────────────────────────────
 router.delete('/confession/:id', requireAdmin, async (req, res) => {
   try {
-    await db.query('DELETE FROM confessions WHERE id = ?', [req.params.id]);
-    await logAction(req.session.user.id, 'DELETE_CONFESSION', null, `Confession #${req.params.id} deleted`);
+    await ConfessionModel.deleteAsAdmin(req.params.id);
+    await logAction(req.session.user.id, 'DELETE_CONFESSION', null, `Confession #${req.params.id} deleted by admin`);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete confession.' });
+  }
+});
+
+// ─── GET /admin/confessions ───────────────────────────────────────────────────
+router.get('/confessions', requireAdmin, async (req, res) => {
+  try {
+    const confessions = await ConfessionModel.getAllForAdmin();
+    res.render('admin/confessions', { title: 'Manage Confessions', confessions });
+  } catch (err) {
+    console.error('Admin confessions error:', err);
+    req.session.error = 'Could not load confessions.';
+    res.redirect('/admin');
   }
 });
 

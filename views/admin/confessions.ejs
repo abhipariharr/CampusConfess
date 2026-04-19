@@ -1,0 +1,96 @@
+<div class="mb-4 d-flex align-items-center justify-content-between">
+  <div>
+    <h2 class="fw-bold mb-1"><i class="bi bi-chat-quote me-2 text-warning"></i>Manage Confessions</h2>
+    <p class="text-muted small">View, search, and moderate all confessions on the platform.</p>
+  </div>
+  <a href="/admin" class="btn btn-ghost btn-sm"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+</div>
+
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <input type="text" id="searchConfessions" class="form-control" placeholder="Search content or author..." style="max-width:300px">
+  <select id="filterFlagged" class="form-select" style="max-width:200px">
+    <option value="">All confessions</option>
+    <option value="flagged">Flagged only</option>
+    <option value="reported">Has reports</option>
+  </select>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table admin-table mb-0" id="confessionsTable">
+      <thead>
+        <tr>
+          <th>ID</th><th>Author</th><th>Content</th><th>Tags</th>
+          <th><i class="bi bi-heart"></i></th><th><i class="bi bi-chat-bubble"></i></th>
+          <th><i class="bi bi-flag"></i></th><th>Date</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% confessions.forEach(c => { %>
+        <tr id="confession-row-<%= c.id %>">
+          <td class="text-muted">#<%= c.id %></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="story-ring" style="width:28px;height:28px">
+                <div class="story-ring-inner" style="background:<%= c.avatar_color %>;font-size:.7rem"><%= c.anon_username.charAt(0) %></div>
+              </div>
+              <span style="font-size:13px"><%= c.anon_username %></span>
+            </div>
+          </td>
+          <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><%= c.content.substring(0,80) %>…</td>
+          <td><span class="badge bg-secondary"><%= c.tags || '—' %></span></td>
+          <td><%= c.like_count %></td>
+          <td><%= c.comment_count %></td>
+          <td>
+            <% if (c.pending_reports > 0) { %>
+              <span class="badge bg-danger"><%= c.pending_reports %></span>
+            <% } else { %>
+              <span class="text-muted">—</span>
+            <% } %>
+          </td>
+          <td class="text-muted small"><%= new Date(c.created_at).toLocaleDateString() %></td>
+          <td>
+            <button class="btn btn-xs btn-outline-danger admin-delete-confession" data-id="<%= c.id %>">Delete</button>
+          </td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.admin-delete-confession').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    if (!confirm('Delete this confession? This will also remove all likes, comments, and reports.')) return;
+    const id = btn.dataset.id;
+    const r = await fetch(`/admin/confession/${id}`, { method: 'DELETE' });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById(`confession-row-${id}`)?.remove();
+    } else {
+      alert(d.error || 'Failed to delete.');
+    }
+  });
+});
+
+document.getElementById('searchConfessions')?.addEventListener('input', (e) => {
+  const term = e.target.value.toLowerCase();
+  document.querySelectorAll('#confessionsTable tbody tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+  });
+});
+
+document.getElementById('filterFlagged')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  document.querySelectorAll('#confessionsTable tbody tr').forEach(row => {
+    if (val === '') {
+      row.style.display = '';
+    } else if (val === 'flagged') {
+      row.style.display = row.cells[6].querySelector('.bg-danger') ? '' : 'none';
+    } else if (val === 'reported') {
+      row.style.display = row.cells[6].textContent.trim() !== '—' ? '' : 'none';
+    }
+  });
+});
+</script>

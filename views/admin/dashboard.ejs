@@ -36,6 +36,7 @@
 <ul class="nav nav-tabs nav-dark mb-4" id="adminTabs">
   <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-reports">Reports <span class="badge bg-warning text-dark ms-1"><%= stats.pending_reports %></span></a></li>
   <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-users">Users</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-confessions">Confessions</a></li>
   <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-logs">Activity Logs <span class="badge bg-secondary ms-1">7-day</span></a></li>
 </ul>
 
@@ -109,6 +110,44 @@
     </div>
   </div>
 
+  <!-- Confessions Tab -->
+  <div class="tab-pane fade" id="tab-confessions">
+    <div class="alert" style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:12px">
+      <i class="bi bi-chat-quote me-2 text-warning"></i>
+      <span class="small text-muted">Admins can view and delete any confession. Deletion removes all likes, comments, and reports.</span>
+    </div>
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table admin-table mb-0">
+          <thead><tr><th>ID</th><th>Author</th><th>Content</th><th>Tags</th><th><i class="bi bi-heart"></i></th><th><i class="bi bi-chat-bubble"></i></th><th><i class="bi bi-flag"></i></th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody>
+          <% if (!confessions || confessions.length === 0) { %>
+          <tr><td colspan="9" class="text-center text-muted py-4">No confessions found.</td></tr>
+          <% } %>
+          <% confessions.forEach(c => { %>
+          <tr id="confession-row-<%= c.id %>">
+            <td class="text-muted">#<%= c.id %></td>
+            <td><%= c.anon_username %></td>
+            <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><%= c.content.substring(0,50) %>…</td>
+            <td><%= c.tags || '—' %></td>
+            <td><%= c.like_count %></td>
+            <td><%= c.comment_count %></td>
+            <td><%= c.is_flagged ? '<span class="badge bg-danger">Yes</span>' : '—' %></td>
+            <td class="text-muted small"><%= new Date(c.created_at).toLocaleDateString() %></td>
+            <td>
+              <button class="btn btn-xs btn-outline-danger admin-delete-confession" data-id="<%= c.id %>">Delete</button>
+            </td>
+          </tr>
+          <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="mt-3">
+      <a href="/admin/confessions" class="btn btn-ghost btn-sm">View full management page <i class="bi bi-arrow-right"></i></a>
+    </div>
+  </div>
+
   <!-- Logs Tab -->
   <div class="tab-pane fade" id="tab-logs">
     <div class="alert" style="background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);border-radius:12px">
@@ -165,6 +204,18 @@ document.querySelectorAll('.review-report, .dismiss-report').forEach(btn => {
   btn.addEventListener('click', async () => {
     const res = await adminAction(`/admin/report/${btn.dataset.id}/review`, 'POST');
     if (res.success) location.reload();
+  });
+});
+
+document.querySelectorAll('.admin-delete-confession').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    if (!confirm('Delete this confession? This will also remove all likes, comments, and reports.')) return;
+    const res = await adminAction(`/admin/confession/${btn.dataset.id}`, 'DELETE');
+    if (res.success) {
+      document.getElementById(`confession-row-${btn.dataset.id}`)?.remove();
+    } else {
+      alert(res.error || 'Failed to delete.');
+    }
   });
 });
 </script>

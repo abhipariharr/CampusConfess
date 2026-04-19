@@ -97,6 +97,24 @@
     });
   });
 
+  // ─── Delete Confession ────────────────────────────────
+  document.querySelectorAll('.delete-confession-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      if (!confirm('Delete this confession? This cannot be undone.')) return;
+      try {
+        const r = await fetch(`/confessions/${id}`, { method: 'DELETE' });
+        const d = await r.json();
+        if (d.success) {
+          const card = document.getElementById(`confession-${id}`);
+          if (card) card.remove();
+        } else {
+          showToast('Failed to delete.', 'error');
+        }
+      } catch (e) { console.error('Delete error:', e); }
+    });
+  });
+
   // ─── Report ──────────────────────────────────────────────
   document.querySelectorAll('.report-btn').forEach(btn => {
     btn.addEventListener('click', () => {

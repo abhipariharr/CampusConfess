@@ -99,6 +99,26 @@ const ConfessionModel = {
     await db.query('DELETE FROM confessions WHERE id = ? AND user_id = ?', [id, user_id]);
   },
 
+  async getAllForAdmin() {
+    const [rows] = await db.query(
+      `SELECT c.*, u.anon_username, u.avatar_color,
+              (SELECT COUNT(*) FROM confession_comments WHERE confession_id = c.id) AS comment_count_real,
+              (SELECT COUNT(*) FROM confession_likes  WHERE confession_id = c.id) AS like_count_real,
+              (SELECT COUNT(*) FROM reports WHERE confession_id = c.id AND status = 'pending') AS pending_reports
+       FROM confessions c
+       JOIN users u ON c.user_id = u.id
+       ORDER BY c.created_at DESC`
+    );
+    return rows;
+  },
+
+  async deleteAsAdmin(id) {
+    await db.query('DELETE FROM confession_likes WHERE confession_id = ?', [id]);
+    await db.query('DELETE FROM confession_comments WHERE confession_id = ?', [id]);
+    await db.query('DELETE FROM reports WHERE confession_id = ?', [id]);
+    await db.query('DELETE FROM confessions WHERE id = ?', [id]);
+  },
+
   async getAllReports() {
     const [rows] = await db.query(
       `SELECT r.*, u.anon_username AS reporter_anon,
