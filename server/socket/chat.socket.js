@@ -55,7 +55,7 @@ module.exports = function (io) {
 
         socket.emit('room_joined', {
           roomCode,
-          myLabel: myProfile?.anon_label,
+          myLabel: myProfile?.anon_username,
           participantCount: participants.length,
           isRevealed: !!room.revealed_at,
           users: revealedUsers,
@@ -63,7 +63,7 @@ module.exports = function (io) {
 
         // Notify others in the room
         socket.to(roomCode).emit('user_joined', {
-          label: myProfile?.anon_label,
+          label: myProfile?.anon_username,
           participantCount: participants.length,
         });
       } catch (err) {
@@ -109,7 +109,7 @@ module.exports = function (io) {
 
         io.to(roomCode).emit('new_message', {
           content: filtered,
-          label: myProfile.anon_label,
+          label: myProfile.anon_username,
           isMine: false, // client overrides for self
           senderId: userId,
           timestamp: new Date().toISOString(),
@@ -122,11 +122,11 @@ module.exports = function (io) {
             user_id: other.user_id,
             type: 'message',
             from_user_id: userId,
-            content: `New message from ${myProfile.anon_label}`,
+            content: `New message from ${myProfile.anon_username}`,
             link: `/chat/${roomCode}`,
           });
           io.to(`user:${other.user_id}`).emit('new_notification', {
-            notification: { id: notifId, user_id: other.user_id, type: 'message', from_user_id: userId, content: `New message from ${myProfile.anon_label}`, link: `/chat/${roomCode}`, is_read: 0, created_at: new Date().toISOString() }
+            notification: { id: notifId, user_id: other.user_id, type: 'message', from_user_id: userId, content: `New message from ${myProfile.anon_username}`, link: `/chat/${roomCode}`, is_read: 0, created_at: new Date().toISOString() }
           });
         }
       } catch (err) {
@@ -154,11 +154,11 @@ module.exports = function (io) {
             user_id: target.user_id,
             type: 'reveal_request',
             from_user_id: userId,
-            content: `${target.anon_label} wants to reveal identities`,
+            content: `${target.anon_username} wants to reveal identities`,
             link: `/chat/${roomCode}`,
           });
           io.to(`user:${target.user_id}`).emit('new_notification', {
-            notification: { id: notifId, user_id: target.user_id, type: 'reveal_request', from_user_id: userId, content: `${target.anon_label} wants to reveal identities`, link: `/chat/${roomCode}`, is_read: 0, created_at: new Date().toISOString() }
+            notification: { id: notifId, user_id: target.user_id, type: 'reveal_request', from_user_id: userId, content: `${target.anon_username} wants to reveal identities`, link: `/chat/${roomCode}`, is_read: 0, created_at: new Date().toISOString() }
           });
         }
       } catch (err) {

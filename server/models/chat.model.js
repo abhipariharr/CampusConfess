@@ -1,6 +1,5 @@
 const db  = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
-const { getChatLabel }  = require('../utils/anonName');
 
 const ChatModel = {
   async findOrCreateRoom({ type = 'random', interest = null, userId }) {
@@ -44,10 +43,9 @@ const ChatModel = {
     const [waiting] = await db.query(query, params);
     if (waiting.length > 0) {
       const room = waiting[0];
-      const label = getChatLabel();
       await db.query(
-        'INSERT INTO chat_participants (room_id, user_id, anon_label) VALUES (?,?,?)',
-        [room.id, userId, label]
+        'INSERT INTO chat_participants (room_id, user_id) VALUES (?,?)',
+        [room.id, userId]
       );
       return { roomId: room.id, roomCode: room.room_code, isNew: false };
     }
@@ -59,10 +57,9 @@ const ChatModel = {
       [roomCode, type, interest || null]
     );
     const roomId = result.insertId;
-    const label  = getChatLabel();
     await db.query(
-      'INSERT INTO chat_participants (room_id, user_id, anon_label) VALUES (?,?,?)',
-      [roomId, userId, label]
+      'INSERT INTO chat_participants (room_id, user_id) VALUES (?,?)',
+      [roomId, userId]
     );
     return { roomId, roomCode, isNew: true };
   },
@@ -100,9 +97,10 @@ const ChatModel = {
 
   async getMessages(roomId, limit = 60) {
     const [rows] = await db.query(
-      `SELECT cm.*, cp.anon_label
+      `SELECT cm.*, u.anon_username
        FROM chat_messages cm
        JOIN chat_participants cp ON cm.room_id = cp.room_id AND cm.sender_id = cp.user_id
+       JOIN users u ON cm.sender_id = u.id
        WHERE cm.room_id = ?
        ORDER BY cm.created_at ASC
        LIMIT ?`,
@@ -165,10 +163,11 @@ const ChatModel = {
 
   async getUserRooms(userId) {
     const [rows] = await db.query(
-      `SELECT cr.*, cp.anon_label, cp.joined_at,
+      `SELECT cr.*, u.anon_username, cp.joined_at,
               (SELECT COUNT(*) FROM chat_messages WHERE room_id = cr.id) AS msg_count
        FROM chat_rooms cr
        JOIN chat_participants cp ON cr.id = cp.room_id
+       JOIN users u ON cp.user_id = u.id
        WHERE cp.user_id = ? AND cr.is_active = 1
        ORDER BY cp.joined_at DESC`,
       [userId]

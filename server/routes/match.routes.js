@@ -4,6 +4,7 @@ const { requireAuth } = require('../middleware/auth');
 const MatchModel = require('../models/match.model');
 const ChatModel  = require('../models/chat.model');
 const UserModel  = require('../models/user.model');
+const db = require('../config/db');
 
 // ─── GET /match ───────────────────────────────────────────────────────────────
 router.get('/', requireAuth, async (req, res) => {
@@ -30,12 +31,10 @@ router.post('/:userId/chat', requireAuth, async (req, res) => {
     }
     const { roomCode } = await ChatModel.findOrCreateRoom({ type: 'direct', userId: req.session.user.id });
     // Add target user to room
-    const room     = await ChatModel.getRoomByCode(roomCode);
-    const { getChatLabel } = require('../utils/anonName');
-    const db       = require('../config/db');
+    const room = await ChatModel.getRoomByCode(roomCode);
     await db.query(
-      'INSERT IGNORE INTO chat_participants (room_id, user_id, anon_label) VALUES (?,?,?)',
-      [room.id, targetId, getChatLabel()]
+      'INSERT IGNORE INTO chat_participants (room_id, user_id) VALUES (?,?)',
+      [room.id, targetId]
     );
     res.json({ success: true, redirect: `/chat/${roomCode}` });
   } catch (err) {

@@ -9,7 +9,7 @@
         <a href="/chat" class="btn btn-sm btn-outline-secondary border-0"><i class="bi bi-arrow-left"></i></a>
         <div class="avatar-sm pulse-glow" style="background:var(--accent-purple)"><i class="bi bi-incognito" style="font-size:.9rem"></i></div>
         <div>
-          <div class="fw-semibold" id="chatPartnerLabel"><%= other ? other.anon_label : 'Waiting for partner...' %></div>
+          <div class="fw-semibold" id="chatPartnerLabel"><%= other ? other.anon_username : 'Waiting for partner...' %></div>
           <div class="text-muted" style="font-size:.72rem" id="typingIndicator">&nbsp;</div>
         </div>
       </div>
@@ -41,7 +41,7 @@
       <% messages.forEach(msg => { %>
       <div class="d-flex <%= msg.sender_id === user.id ? 'justify-content-end' : 'justify-content-start' %> mb-2">
         <div class="message-bubble <%= msg.sender_id === user.id ? 'message-mine' : 'message-theirs' %>">
-          <% if (msg.sender_id !== user.id) { %><div class="message-label text-muted mb-1" style="font-size:.7rem"><%= msg.anon_label %></div><% } %>
+          <% if (msg.sender_id !== user.id) { %><div class="message-label text-muted mb-1" style="font-size:.7rem"><%= msg.anon_username %></div><% } %>
           <div><%= msg.content %></div>
           <div class="text-end mt-1" style="font-size:.65rem;opacity:.6"><%= new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) %></div>
         </div>
@@ -78,6 +78,6 @@
 <script>
 window.ROOM_CODE  = '<%= room.room_code %>';
 window.MY_USER_ID = '<%= user.id %>';
-window.MY_LABEL   = '<%= myProfile ? myProfile.anon_label : "" %>';
-window.ORIGINAL_LABEL = '<%= other ? other.anon_label : "" %>';
+window.MY_LABEL   = '<%= myProfile ? myProfile.anon_username : "" %>';
+window.ORIGINAL_LABEL = '<%= other ? other.anon_username : "" %>';
 </script>
