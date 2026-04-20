@@ -4,24 +4,24 @@
   <div class="col-lg-7 col-xl-8">
 
     <!-- Stories Row -->
-    <div class="stories-row px-2 px-md-0">
-      <!-- "Your Story" / Post button -->
-      <div class="story-item" onclick="window.location='/confessions/new'">
-        <div class="story-add">➕</div>
-        <span class="story-label" style="font-size:11px;color:var(--text-2)">Your Story</span>
-      </div>
+    <!-- <div class="stories-row px-2 px-md-0">
+      "Your Story" / Post button -->
+      <!-- <div class="story-item" onclick="window.location='/confessions/new'"> -->
+        <!-- <div class="story-add">➕</div> -->
+        <!-- <span class="story-label" style="font-size:11px;color:var(--text-2)">Your Story</span> -->
+      <!-- </div> -->
       <!-- Placeholder story circles from feed confessions -->
-      <% confessions.slice(0,8).forEach(c => { %>
-      <div class="story-item">
-        <div class="story-ring">
-          <div class="story-ring-inner" style="background:<%= c.avatar_color %>">
-            <%= c.anon_username.charAt(0) %>
-          </div>
-        </div>
-        <span class="story-label"><%= c.anon_username.replace('Anon','').substring(0,8) %></span>
-      </div>
-      <% }) %>
-    </div>
+      <!-- <% confessions.slice(0,8).forEach(c => { %> -->
+      <!-- <div class="story-item"> -->
+        <!-- <div class="story-ring"> -->
+          <!-- <div class="story-ring-inner" style="background:<%= c.avatar_color %>"> -->
+            <!-- <%= c.anon_username.charAt(0) %> -->
+          <!-- </div> -->
+        <!-- </div> -->
+        <!-- <span class="story-label"><%= c.anon_username.replace('Anon','').substring(0,8) %></span> -->
+      <!-- </div> -->
+      <!-- <% }) %> -->
+    <!-- </div> -->
 
     <!-- Filter Pills -->
     <div class="trending-bar px-2 px-md-0 mt-2 mb-0">
