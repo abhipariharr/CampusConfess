@@ -19,3 +19,6 @@ CREATE TABLE IF NOT EXISTS notifications (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Migration: Add revealed_at column to chat_rooms
+ALTER TABLE chat_rooms ADD COLUMN revealed_at TIMESTAMP NULL DEFAULT NULL AFTER is_active;

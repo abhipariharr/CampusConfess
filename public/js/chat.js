@@ -23,12 +23,14 @@
   const sendBtn     = document.getElementById('sendBtn');
   const typingEl    = document.getElementById('typingIndicator');
   const revealBtn   = document.getElementById('revealBtn');
+  const hideRevealBtn = document.getElementById('hideRevealBtn');
   const revealModal = new bootstrap.Modal(document.getElementById('revealModal'));
   const acceptBtn   = document.getElementById('acceptRevealBtn');
   const blockBtn    = document.getElementById('blockUserBtn');
   const reportBtn   = document.getElementById('reportUserBtn');
 
   let typingTimer;
+  let isRevealed = false;
 
   // ─── Set current room for navbar badge ────────────────────
   window.currentRoomCode = window.ROOM_CODE;
@@ -39,11 +41,14 @@
   // Mark messages as read when viewing this room
   socket.emit('mark_messages_read', { roomCode: window.ROOM_CODE });
 
-  socket.on('room_joined', ({ participantCount }) => {
+  socket.on('room_joined', ({ participantCount, isRevealed: wasRevealed, users }) => {
     if (participantCount >= 2) {
       appendSystemMsg('Chat started! Everything is anonymous until you both reveal.');
     } else {
       appendSystemMsg('Waiting for a partner to join...');
+    }
+    if (wasRevealed && users) {
+      applyRevealedState(users);
     }
     scrollBottom();
   });
@@ -145,15 +150,23 @@
   });
 
   socket.on('identities_revealed', ({ users }) => {
-    const names = users.map(u => u.anon_username).join(' & ');
-    appendSystemMsg(`🎭 Identities revealed! You are chatting with: ${names}`);
-    if (revealBtn) revealBtn.style.display = 'none';
-    users.forEach(u => {
-      const label = document.getElementById('chatPartnerLabel');
-      if (label && String(u.id) !== String(window.MY_USER_ID)) {
-        label.textContent = u.anon_username;
-      }
-    });
+    applyRevealedState(users);
+  });
+
+  socket.on('reveal_hidden', () => {
+    applyHiddenState();
+  });
+
+  // ─── Reveal System ───────────────────────────────────────
+  revealBtn && revealBtn.addEventListener('click', async () => {
+    revealBtn.disabled = true;
+    revealBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Waiting...';
+    socket.emit('request_reveal', { roomCode: window.ROOM_CODE });
+  });
+
+  hideRevealBtn && hideRevealBtn.addEventListener('click', async () => {
+    if (!confirm('Hide your identity again?')) return;
+    socket.emit('hide_reveal', { roomCode: window.ROOM_CODE });
   });
 
   // ─── Block & Report ──────────────────────────────────────
@@ -176,6 +189,39 @@
   });
 
   // ─── Helpers ─────────────────────────────────────────────
+  function applyRevealedState(users) {
+    isRevealed = true;
+    const names = users.map(u => u.anon_username).join(' & ');
+    appendSystemMsg(`🎭 Identities revealed! You are chatting with: ${names}`);
+    if (revealBtn) {
+      revealBtn.classList.add('d-none');
+      revealBtn.disabled = false;
+      revealBtn.innerHTML = '<i class="bi bi-eye me-1"></i>Reveal';
+    }
+    if (hideRevealBtn) hideRevealBtn.classList.remove('d-none');
+    users.forEach(u => {
+      const label = document.getElementById('chatPartnerLabel');
+      if (label && String(u.id) !== String(window.MY_USER_ID)) {
+        label.textContent = u.anon_username;
+      }
+    });
+  }
+
+  function applyHiddenState() {
+    isRevealed = false;
+    appendSystemMsg('Identities are now hidden.');
+    if (revealBtn) {
+      revealBtn.classList.remove('d-none');
+      revealBtn.disabled = false;
+      revealBtn.innerHTML = '<i class="bi bi-eye me-1"></i>Reveal';
+    }
+    if (hideRevealBtn) hideRevealBtn.classList.add('d-none');
+    // Reset partner label to anon
+    const other = document.getElementById('chatPartnerLabel');
+    if (other && window.ORIGINAL_LABEL) {
+      other.textContent = window.ORIGINAL_LABEL;
+    }
+  }
   function appendMessage(content, label, isMine) {
     const wrap = document.createElement('div');
     wrap.className = `d-flex ${isMine ? 'justify-content-end' : 'justify-content-start'} mb-2`;

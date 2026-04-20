@@ -43,10 +43,22 @@ module.exports = function (io) {
 
         const myProfile = participants.find(p => p.user_id === userId);
 
+        let revealedUsers = null;
+        if (room.revealed_at) {
+          const userIds = participants.map(p => p.user_id);
+          const [users] = await db.query(
+            'SELECT id, anon_username, avatar_color FROM users WHERE id IN (?)',
+            [userIds]
+          );
+          revealedUsers = users;
+        }
+
         socket.emit('room_joined', {
           roomCode,
           myLabel: myProfile?.anon_label,
           participantCount: participants.length,
+          isRevealed: !!room.revealed_at,
+          users: revealedUsers,
         });
 
         // Notify others in the room
@@ -206,6 +218,20 @@ module.exports = function (io) {
         }
       } catch (err) {
         console.error('accept_reveal error:', err);
+      }
+    });
+
+    // ─── Hide Reveal ────────────────────────────────────────────────────────
+    socket.on('hide_reveal', async ({ roomCode }) => {
+      try {
+        const room = await ChatModel.getRoomByCode(roomCode);
+        if (!room || !room.revealed_at) return;
+
+        await ChatModel.hideReveal(room.id, userId);
+
+        io.to(roomCode).emit('reveal_hidden');
+      } catch (err) {
+        console.error('hide_reveal error:', err);
       }
     });
 

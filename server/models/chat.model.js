@@ -128,7 +128,15 @@ const ChatModel = {
       'SELECT COUNT(*) as cnt FROM chat_participants WHERE room_id = ? AND reveal_accepted = 1',
       [roomId]
     );
+    if (rows[0].cnt >= 2) {
+      await db.query('UPDATE chat_rooms SET revealed_at = NOW() WHERE id = ?', [roomId]);
+    }
     return rows[0].cnt >= 2;
+  },
+
+  async hideReveal(roomId, userId) {
+    await db.query('UPDATE chat_rooms SET revealed_at = NULL WHERE id = ?', [roomId]);
+    await db.query('UPDATE chat_participants SET reveal_requested = 0, reveal_accepted = 0 WHERE room_id = ?', [roomId]);
   },
 
   async blockUser(roomId, userId) {
