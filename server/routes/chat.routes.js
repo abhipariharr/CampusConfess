@@ -114,6 +114,20 @@ router.post('/:roomCode/block', requireAuth, async (req, res) => {
   }
 });
 
+// ─── POST /chat/:roomCode/leave ───────────────────────────────────────────────
+router.post('/:roomCode/leave', requireAuth, async (req, res) => {
+  try {
+    const room = await ChatModel.getRoomByCode(req.params.roomCode);
+    if (!room) return res.status(404).json({ error: 'Room not found.' });
+    await ChatModel.leaveRoom(room.id, req.session.user.id);
+    req.session.success = 'Chat deleted.';
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Leave room error:', err);
+    res.status(500).json({ error: 'Failed to delete chat.' });
+  }
+});
+
 // ─── POST /chat/:roomCode/report ──────────────────────────────────────────────
 router.post('/:roomCode/report', requireAuth, async (req, res) => {
   try {

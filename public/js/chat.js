@@ -1,5 +1,20 @@
 /* ─── Socket.io Chat Client ─────────────────────────────── */
 (function () {
+  // ─── Delete chat button (chat index page) ───────────────
+  document.querySelectorAll('.delete-chat-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const roomCode = btn.dataset.room;
+      if (!confirm('Delete this chat?')) return;
+      const r = await fetch(`/chat/${roomCode}/leave`, { method: 'POST' });
+      const d = await r.json();
+      if (d.success) {
+        btn.closest('.col-md-4').remove();
+      }
+    });
+  });
+
   if (typeof window.ROOM_CODE === 'undefined') return; // Only run on room page
 
   const socket      = io();

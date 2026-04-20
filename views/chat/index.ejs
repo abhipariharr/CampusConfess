@@ -35,8 +35,8 @@
     <div class="row g-3">
       <% rooms.forEach(r => { %>
       <div class="col-md-4">
-        <a href="/chat/<%= r.room_code %>" class="text-decoration-none">
-          <div class="card p-3 hover-card">
+        <div class="card p-3 hover-card position-relative">
+          <a href="/chat/<%= r.room_code %>" class="text-decoration-none">
             <div class="d-flex gap-2 align-items-center">
               <div class="avatar-sm" style="background:var(--accent-purple)"><i class="bi bi-chat-fill" style="font-size:.9rem"></i></div>
               <div>
@@ -44,8 +44,11 @@
                 <div class="text-muted" style="font-size:.72rem"><%= r.room_type %> · <%= r.msg_count %> msgs</div>
               </div>
             </div>
-          </div>
-        </a>
+          </a>
+          <button type="button" class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2 delete-chat-btn" data-room="<%= r.room_code %>" title="Delete chat">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
       </div>
       <% }) %>
     </div>

@@ -139,6 +139,15 @@ const ChatModel = {
     await db.query('UPDATE chat_rooms SET is_active = 0 WHERE id = ?', [roomId]);
   },
 
+  async leaveRoom(roomId, userId) {
+    await db.query('DELETE FROM chat_participants WHERE room_id = ? AND user_id = ?', [roomId, userId]);
+    const [remaining] = await db.query('SELECT COUNT(*) as cnt FROM chat_participants WHERE room_id = ?', [roomId]);
+    if (remaining[0].cnt === 0) {
+      await db.query('DELETE FROM chat_messages WHERE room_id = ?', [roomId]);
+      await db.query('DELETE FROM chat_rooms WHERE id = ?', [roomId]);
+    }
+  },
+
   async reportUser({ reporter_id, reported_user_id, room_id, reason }) {
     await db.query(
       'INSERT INTO reports (reporter_id, reported_user_id, reason) VALUES (?,?,?)',
