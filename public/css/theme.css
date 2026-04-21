@@ -47,7 +47,13 @@ body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh; /* dynamic vh for mobile browser chrome */
 }
+
+main { flex: 1; }
 
 /* ─── Typography ─────────────────────────────────────── */
 h1,h2,h3,h4,h5,h6 {
@@ -159,7 +165,7 @@ h1,h2,h3,h4,h5,h6 {
 
 @media (max-width: 768px) {
   .bottom-nav  { display: flex; }
-  main         { padding-bottom: max(70px, calc(70px + env(safe-area-inset-bottom))) !important; }
+  main         { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
 }
 
 /* ─── Dropdown ────────────────────────────────────────── */
