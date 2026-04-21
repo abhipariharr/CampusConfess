@@ -44,9 +44,11 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  height: 100%;
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 /* ─── Typography ─────────────────────────────────────── */
@@ -617,9 +619,23 @@ h1,h2,h3,h4,h5,h6 {
 
 .chat-room-container {
   height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+}
+.chat-room-container > .col-12 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 @media (max-width: 768px) {
-  .chat-room-container { height: calc(100vh - 60px - 70px); }
+  .chat-room-container {
+    height: 100vh;
+    position: fixed;
+    left: 0; right: 0; top: 0;
+    z-index: 1050;
+  }
+  body.chat-open { overflow: hidden; }
+  .bottom-nav { display: none !important; }
 }
 
 /* ═══════════════════════════════════════════════════════
