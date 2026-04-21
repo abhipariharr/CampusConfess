@@ -44,9 +44,9 @@ const ChatModel = {
     if (waiting.length > 0) {
       const room = waiting[0];
       await db.query(
-        'INSERT INTO chat_participants (room_id, user_id) VALUES (?,?)',
-        [room.id, userId]
-      );
+  'INSERT INTO chat_participants (room_id, user_id, anon_label) VALUES (?, ?, ?)',
+  [roomId, userId, 'Anonymous']
+);
       return { roomId: room.id, roomCode: room.room_code, isNew: false };
     }
 
@@ -58,9 +58,9 @@ const ChatModel = {
     );
     const roomId = result.insertId;
     await db.query(
-      'INSERT INTO chat_participants (room_id, user_id) VALUES (?,?)',
-      [roomId, userId]
-    );
+  'INSERT INTO chat_participants (room_id, user_id, anon_label) VALUES (?, ?, ?)',
+  [roomId, userId, 'Anonymous']
+);
     return { roomId, roomCode, isNew: true };
   },
 
