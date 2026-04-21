@@ -2,6 +2,7 @@
 
 > Anonymous college social platform — confess, chat anonymously, reveal identity by mutual consent, and find matches based on shared interests.
 
+https://campusconfess-production.up.railway.app/
 ---
 
 ## ⚙️ Setup Instructions
