@@ -83,7 +83,7 @@ app.use((req, res, next) => {
   res.locals.user          = req.session.user || null;
   res.locals.success       = req.session.success || null;
   res.locals.error         = req.session.error   || null;
-  res.locals.title         = 'CampusWhisper';
+  res.locals.title         = 'CampusConfess';
   res.locals.metaDesc      = 'Anonymous college social platform';
   res.locals.pageScript    = null;
   res.locals.includeSocket = false;
@@ -117,7 +117,7 @@ require('./server/socket/chat.socket')(io);
 // ─── Start ────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`\n🚀 CampusWhisper → http://localhost:${PORT}`);
+  console.log(`\n🚀 CampusConfess → http://localhost:${PORT}`);
   console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
 

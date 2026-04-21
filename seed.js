@@ -4,7 +4,7 @@ const db = require('./server/config/db');
 const { generateAnonUsername } = require('./server/utils/anonName');
 
 async function seed() {
-  console.log('🌱 Seeding CampusWhisper database...\n');
+  console.log('🌱 Seeding CampusConfess database...\n');
 
   // ─── Admin user ────────────────────────────────────────
   const adminHash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'Admin@1234', 12);

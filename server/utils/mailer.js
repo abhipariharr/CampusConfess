@@ -16,13 +16,13 @@ function createTransporter() {
 async function sendPasswordResetEmail(toEmail, resetLink) {
   const transporter = createTransporter();
   const mailOptions = {
-    from: process.env.EMAIL_FROM || 'no-reply@campuswhisper.local',
+    from: process.env.EMAIL_FROM || 'no-reply@campusconfess.local',
     to:   toEmail,
-    subject: 'CampusWhisper — Reset Your Password',
+    subject: 'CampusConfess — Reset Your Password',
     html: `
       <div style="font-family:Inter,sans-serif;max-width:520px;margin:auto;background:#12122a;color:#f1f5f9;border-radius:16px;padding:32px;">
         <h2 style="background:linear-gradient(135deg,#7c3aed,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
-          CampusWhisper
+          CampusConfess
         </h2>
         <p>You requested a password reset. Click the button below — this link expires in <strong>1 hour</strong>.</p>
         <a href="${resetLink}" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;padding:12px 28px;border-radius:50px;text-decoration:none;font-weight:600;margin:16px 0;">
