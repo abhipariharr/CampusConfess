@@ -42,11 +42,12 @@ const ChatModel = {
 
     const [waiting] = await db.query(query, params);
     if (waiting.length > 0) {
-      const room = waiting[0];
-      await db.query(
-  'INSERT INTO chat_participants (room_id, user_id, anon_label) VALUES (?, ?, ?)',
-  [roomId, userId, 'Anonymous']
-);
+  const room = waiting[0];
+
+  await db.query(
+    'INSERT INTO chat_participants (room_id, user_id, anon_label) VALUES (?, ?, ?)',
+    [roomId, userId, 'Anonymous']  ❌
+  );
       return { roomId: room.id, roomCode: room.room_code, isNew: false };
     }
 
