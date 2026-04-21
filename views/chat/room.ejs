@@ -1,59 +1,53 @@
 <%
  const other = participants.find(p => p.user_id !== user.id);
 %>
-<div class="row g-0 chat-room-container">
-  <div class="col-12 d-flex flex-column" style="height:100vh;overflow:hidden">
-    <!-- Header -->
-    <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom brd glass-nav" style="border-radius:12px 12px 0 0;flex-shrink:0">
-      <div class="d-flex align-items-center gap-3">
-        <a href="/chat" class="btn btn-sm btn-outline-secondary border-0"><i class="bi bi-arrow-left"></i></a>
-        <div class="avatar-sm pulse-glow" style="background:var(--accent-purple)"><i class="bi bi-incognito" style="font-size:.9rem"></i></div>
-        <div>
-          <div class="fw-semibold" id="chatPartnerLabel"><%= other ? other.anon_username : 'Waiting for partner...' %></div>
-          <div class="text-muted" style="font-size:.72rem" id="typingIndicator">&nbsp;</div>
-        </div>
-      </div>
-      <div class="d-flex gap-2">
-        <!-- <button class="btn btn-sm btn-outline-success" id="revealBtn"><i class="bi bi-eye me-1"></i>Reveal</button>
-        <button class="btn btn-sm btn-outline-warning d-none" id="hideRevealBtn"><i class="bi bi-eye-slash me-1"></i>Hide</button>
-        <div class="dropdown"> -->
-          <button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
-          <ul class="dropdown-menu dropdown-menu-end glass-dropdown">
-            <li><button class="dropdown-item text-warning" id="reportUserBtn"><i class="bi bi-flag me-2"></i>Report</button></li>
-            <li><button class="dropdown-item text-danger" id="blockUserBtn"><i class="bi bi-slash-circle me-2"></i>Block &amp; End</button></li>
-          </ul>
-        </div>
+<div class="chat-room-container d-flex flex-column" style="height:calc(100vh - 140px)">
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom brd glass-nav flex-shrink-0" style="border-radius:12px 12px 0 0">
+    <div class="d-flex align-items-center gap-3">
+      <a href="/chat" class="btn btn-sm btn-outline-secondary border-0"><i class="bi bi-arrow-left"></i></a>
+      <div class="avatar-sm pulse-glow" style="background:var(--accent-purple)"><i class="bi bi-incognito" style="font-size:.9rem"></i></div>
+      <div>
+        <div class="fw-semibold" id="chatPartnerLabel"><%= other ? other.anon_username : 'Waiting for partner...' %></div>
+        <div class="text-muted" style="font-size:.72rem" id="typingIndicator">&nbsp;</div>
       </div>
     </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+      <ul class="dropdown-menu dropdown-menu-end glass-dropdown">
+        <li><button class="dropdown-item text-warning" id="reportUserBtn"><i class="bi bi-flag me-2"></i>Report</button></li>
+        <li><button class="dropdown-item text-danger" id="blockUserBtn"><i class="bi bi-slash-circle me-2"></i>Block &amp; End</button></li>
+      </ul>
+    </div>
+  </div>
 
-    <!-- Messages -->
-    <div class="flex-grow-1 overflow-auto p-3" id="chatMessages" style="background:var(--bg-secondary);flex-shrink:1;min-height:0">
-      <% if (messages.length === 0) { %>
-      <div class="text-center text-muted py-5">
-        <i class="bi bi-chat-square-dots display-3 mb-3 d-block" style="opacity:.3"></i>
-        <% if (participants.length < 2) { %>
-          <p>Waiting for someone to join...</p>
-        <% } else { %>
-          <p>Chat started! Say hello 👋</p>
-        <% } %>
-      </div>
+  <!-- Messages -->
+  <div class="flex-grow-1 overflow-auto p-3" id="chatMessages" style="background:var(--bg-secondary);min-height:0">
+    <% if (messages.length === 0) { %>
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-chat-square-dots display-3 mb-3 d-block" style="opacity:.3"></i>
+      <% if (participants.length < 2) { %>
+        <p>Waiting for someone to join...</p>
+      <% } else { %>
+        <p>Chat started! Say hello 👋</p>
       <% } %>
-      <% messages.forEach(msg => { %>
-      <div class="d-flex <%= msg.sender_id === user.id ? 'justify-content-end' : 'justify-content-start' %> mb-2">
-        <div class="message-bubble <%= msg.sender_id === user.id ? 'message-mine' : 'message-theirs' %>">
-          <% if (msg.sender_id !== user.id) { %><div class="message-label text-muted mb-1" style="font-size:.7rem"><%= msg.anon_username %></div><% } %>
-          <div><%= msg.content %></div>
-          <div class="text-end mt-1" style="font-size:.65rem;opacity:.6"><%= new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) %></div>
-        </div>
+    </div>
+    <% } %>
+    <% messages.forEach(msg => { %>
+    <div class="d-flex <%= msg.sender_id === user.id ? 'justify-content-end' : 'justify-content-start' %> mb-2">
+      <div class="message-bubble <%= msg.sender_id === user.id ? 'message-mine' : 'message-theirs' %>">
+        <% if (msg.sender_id !== user.id) { %><div class="message-label text-muted mb-1" style="font-size:.7rem"><%= msg.anon_username %></div><% } %>
+        <div><%= msg.content %></div>
+        <div class="text-end mt-1" style="font-size:.65rem;opacity:.6"><%= new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) %></div>
       </div>
-      <% }) %>
     </div>
+    <% }) %>
+  </div>
 
-    <!-- Input -->
-    <div class="d-flex gap-2 p-3 border-top brd flex-shrink-0" style="background:var(--bg-card);border-radius:0 0 12px 12px">
-      <input type="text" id="msgInput" class="form-control" placeholder="Type a message... (anonymous)" maxlength="1000" autocomplete="off">
-      <button class="btn btn-gradient px-3 flex-shrink-0" id="sendBtn"><i class="bi bi-send-fill"></i></button>
-    </div>
+  <!-- Input -->
+  <div class="d-flex gap-2 p-3 border-top brd flex-shrink-0" style="background:var(--bg-card);border-radius:0 0 12px 12px">
+    <input type="text" id="msgInput" class="form-control" placeholder="Type a message... (anonymous)" maxlength="1000" autocomplete="off">
+    <button class="btn btn-gradient px-3 flex-shrink-0" id="sendBtn"><i class="bi bi-send-fill"></i></button>
   </div>
 </div>
 
