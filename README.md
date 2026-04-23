@@ -83,27 +83,66 @@ campuswhisper/
 ├── app.js                    # Express + Socket.io entry
 ├── schema.sql                # Full MySQL schema
 ├── seed.js                   # Demo data seeder
+├── hash.js                   # Password hashing utility
+├── .env.example              # Environment template
 ├── server/
-│   ├── config/db.js          # MySQL2 connection pool
+│   ├── config/
+│   │   └── db.js             # MySQL2 connection pool
 │   ├── middleware/
-│   │   ├── auth.js           # requireAuth / requireAdmin guards
-│   │   └── rateLimiter.js    # Rate limits on auth/API routes
-│   ├── models/               # MySQL query helpers (no ORM)
-│   ├── routes/               # Express route files
-│   ├── socket/chat.socket.js # Socket.io real-time handlers
-│   └── utils/                # anonName, badWords, mailer
-├── views/                    # EJS templates
-│   ├── layouts/              # main.ejs + auth.ejs
-│   ├── partials/             # navbar.ejs + flash.ejs
-│   ├── auth/                 # login, signup, forgot/reset password
-│   ├── feed/                 # index (feed), post (confession form)
-│   ├── chat/                 # index (lobby), room (active chat)
-│   ├── match/                # matchmaking suggestions
-│   ├── profile/              # user profile + interests
-│   └── admin/                # dashboard (reports, users, logs)
+│   │   ├── auth.js          # requireAuth / requireAdmin guards
+│   │   └── rateLimiter.js   # Rate limits on auth/API routes
+│   ├── models/
+│   │   ├── user.model.js        # User queries
+│   │   ├── confession.model.js  # Confession CRUD
+│   │   ├── chat.model.js       # Chat room queries
+│   │   ├── match.model.js      # Match suggestions
+│   │   └── notification.model.js # Notifications
+│   ├── routes/
+│   │   ├── auth.routes.js      # Login, signup, password reset
+│   │   ├── confessions.routes.js # Feed, create, like, comment
+│   │   ├── chat.routes.js      # Chat lobby and rooms
+│   │   ├── match.routes.js     # Matchmaking endpoints
+│   │   ├── profile.routes.js   # User profile
+│   │   └── admin.routes.js     # Admin panel
+│   ├── socket/
+│   │   └── chat.socket.js  # Socket.io real-time chat handlers
+│   └── utils/
+│       ├── anonName.js     # Random anonymous name generator
+│       ├── badWords.js     # Profanity filter
+│       └── mailer.js       # Email (Nodemailer)
+├── views/
+│   ├── layouts/
+│   │   ├── main.ejs        # Main layout (navbar, flash)
+│   │   └── auth.ejs        # Auth layout (login/signup)
+│   ├── partials/
+│   │   ├── navbar.ejs      # Navigation bar
+│   │   └── flash.ejs       # Flash messages
+│   ├── auth/
+│   │   ├── login.ejs
+│   │   ├── signup.ejs
+│   │   ├── forgot-password.ejs
+│   │   └── reset-password.ejs
+│   ├── feed/
+│   │   ├── index.ejs       # Confession feed
+│   │   └── post.ejs        # Create confession form
+│   ├── chat/
+│   │   ├── index.ejs       # Chat lobby
+│   │   └── room.ejs        # Active chat room
+│   ├── match/
+│   │   └── index.ejs       # Match suggestions
+│   ├── profile/
+│   │   └── index.ejs       # User profile
+│   ├── admin/
+│   │   ├── dashboard.ejs    # Admin dashboard
+│   │   └── confessions.ejs   # Confession management
+│   └── error.ejs           # Error page
 └── public/
-    ├── css/theme.css         # Cinematic dark theme
-    └── js/                   # chat.js, confessions.js, match.js
+    ├── css/
+    │   └── theme.css       # Cinematic dark theme
+    └── js/
+        ├── chat.js         # Chat functionality
+        ├── confessions.js  # Feed interactions
+        └── match.js        # Match interactions
 ```
 
 ---
