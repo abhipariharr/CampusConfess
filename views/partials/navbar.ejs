@@ -1,5 +1,5 @@
 <nav class="navbar navbar-dark sticky-top glass-nav">
-  <div class="container-fluid px-3 px-md-4 d-flex align-items-center" style="height:60px">
+  <div class="container-fluid px-3 px-md-4 d-flex align-items-center" style="height:64px">
 
     <!-- Brand -->
     <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none me-auto" href="/">
@@ -102,34 +102,8 @@
 </nav>
 
 <script>
-document.getElementById('searchToggle').addEventListener('click', (e) => {
-  e.stopPropagation();
-  const dropdown = document.getElementById('searchDropdown');
-  const isOpen = dropdown.style.display !== 'none';
-  dropdown.style.display = isOpen ? 'none' : 'block';
-  if (!isOpen) document.getElementById('searchInput').focus();
-});
-document.addEventListener('click', () => {
-  document.getElementById('searchDropdown').style.display = 'none';
-});
-document.getElementById('searchDropdown').addEventListener('click', (e) => e.stopPropagation());
+// ─── Chat badge (via Socket.IO) ──────────────────────────────────────────────
 
-// ─── Notifications ──────────────────────────────────────────────────────────
-const notifBell = document.getElementById('notifBell');
-const notifDropdown = document.getElementById('notifDropdown');
-const notifBadge = document.getElementById('notifBadge');
-const notifList = document.getElementById('notifList');
-
-notifBell && notifBell.addEventListener('click', (e) => {
-  e.stopPropagation();
-  notifDropdown.style.display = notifDropdown.style.display !== 'none' ? 'none' : 'block';
-  if (notifDropdown.style.display === 'block') {
-    document.getElementById('searchDropdown').style.display = 'none';
-    socket.emit('get_notifications');
-  }
-});
-document.addEventListener('click', () => { notifDropdown.style.display = 'none'; });
-notifDropdown && notifDropdown.addEventListener('click', (e) => e.stopPropagation());
 
 // Socket listeners
 if (typeof socket !== 'undefined') {
