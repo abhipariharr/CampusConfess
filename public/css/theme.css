@@ -493,7 +493,7 @@ h1,h2,h3,h4,h5,h6 {
 
 /* Timestamp */
 .post-time {
-  padding: 0 1rem .85rem;
+  padding: 0 1rem 3rem;
   font-size: 10px;
   font-weight: 600;
   color: var(--text-3);
