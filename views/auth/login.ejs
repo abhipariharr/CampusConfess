@@ -1,52 +1,143 @@
-<div class="auth-wrapper">
-  <div class="auth-card">
+<div class="auth-split-wrapper">
 
-    <!-- Logo -->
-    <div class="text-center mb-4">
-      <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#a855f7,#f472b6);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem">🎭</div>
-      <h2 class="brand-name mb-1">CampusConfess</h2>
-      <p style="color:var(--text-3);font-size:.85rem">Welcome back 👋 Your secrets are safe.</p>
+  <!-- ── Left Panel: Brand showcase (hidden on small screens) ── -->
+  <div class="auth-brand-panel" aria-hidden="true">
+    <div class="brand-panel-inner">
+      <div class="brand-logo-hero">
+        <div class="brand-icon-ring">🎭</div>
+      </div>
+      <h1 class="brand-panel-title">CampusConfess</h1>
+      <p class="brand-panel-sub">The anonymous social space for your campus community.</p>
+
+      <div class="brand-features">
+        <div class="brand-feature-item">
+          <div class="feature-icon-wrap"><i class="bi bi-shield-check-fill"></i></div>
+          <div>
+            <div class="feature-title">100% Anonymous</div>
+            <div class="feature-desc">Your identity is never revealed.</div>
+          </div>
+        </div>
+        <div class="brand-feature-item">
+          <div class="feature-icon-wrap"><i class="bi bi-heart-fill"></i></div>
+          <div>
+            <div class="feature-title">Find Your Match</div>
+            <div class="feature-desc">Connect with like-minded students.</div>
+          </div>
+        </div>
+        <div class="brand-feature-item">
+          <div class="feature-icon-wrap"><i class="bi bi-chat-dots-fill"></i></div>
+          <div>
+            <div class="feature-title">Private Chats</div>
+            <div class="feature-desc">Conversations that stay between you two.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating testimony cards -->
+      <div class="floating-cards-wrap">
+        <div class="floating-card fc-1">
+          <span class="fc-avatar" style="background:#7c3aed">S</span>
+          <div>
+            <div class="fc-text">"Finally a safe space to be honest 💜"</div>
+            <div class="fc-user">SilentWanderer42</div>
+          </div>
+        </div>
+        <div class="floating-card fc-2">
+          <span class="fc-avatar" style="background:#be185d">M</span>
+          <div>
+            <div class="fc-text">"Found my best friend anonymously 🎉"</div>
+            <div class="fc-user">MysticOwl99</div>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <form action="/login" method="POST" id="loginForm">
-      <div class="mb-3">
-        <label for="email" class="form-label">College Email</label>
-        <div class="input-group-icon">
-          <i class="bi bi-envelope-fill"></i>
-          <input type="email" id="email" name="email" class="form-control" placeholder="you@university.edu" required autocomplete="email">
-        </div>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label d-flex justify-content-between align-items-center">
-          <span>Password</span>
-          <a href="/forgot-password" style="color:#c084fc;font-size:.78rem;font-weight:600">Forgot password?</a>
-        </label>
-        <div class="input-group-icon">
-          <i class="bi bi-lock-fill"></i>
-          <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
-          <button type="button" class="toggle-pw" onclick="togglePw()" tabindex="-1"><i class="bi bi-eye" id="pwIcon"></i></button>
-        </div>
-      </div>
-      <div class="mb-4 d-flex justify-content-between align-items-center">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="remember_me" name="remember_me" value="1">
-          <label class="form-check-label" for="remember_me" style="font-size:.82rem;color:var(--text-2)">Remember me for 30 days</label>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-glow w-100 py-2 mb-3" id="loginBtn" style="font-size:1rem">
-        Login →
-      </button>
-    </form>
-
-    <div style="text-align:center;position:relative;margin-bottom:1.25rem">
-      <hr style="border-color:var(--border-2)">
-      <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-card);padding:0 .75rem;font-size:.75rem;color:var(--text-3)">or</span>
-    </div>
-
-    <p class="text-center mb-0" style="font-size:.875rem;color:var(--text-2)">
-      New here? <a href="/signup" style="color:#c084fc;font-weight:700">Create an anonymous account ✨</a>
-    </p>
   </div>
+
+  <!-- ── Right Panel: Login form ── -->
+  <div class="auth-form-panel">
+    <div class="auth-form-inner">
+
+      <!-- Mobile-only brand header -->
+      <div class="auth-mobile-brand">
+        <div class="mobile-brand-icon">🎭</div>
+        <span class="mobile-brand-name">CampusConfess</span>
+      </div>
+
+      <div class="auth-form-header">
+        <h2 class="auth-form-title">Welcome back</h2>
+        <p class="auth-form-subtitle">Sign in to your anonymous account</p>
+      </div>
+
+      <form action="/login" method="POST" id="loginForm" novalidate>
+
+        <div class="auth-field-group">
+          <label for="email" class="auth-label">College Email</label>
+          <div class="auth-input-wrap">
+            <i class="bi bi-envelope-fill auth-input-icon"></i>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="auth-input"
+              placeholder="you@university.edu"
+              required
+              autocomplete="email"
+            >
+          </div>
+        </div>
+
+        <div class="auth-field-group">
+          <label for="password" class="auth-label">
+            Password
+            <a href="/forgot-password" class="auth-forgot-link" tabindex="-1">Forgot password?</a>
+          </label>
+          <div class="auth-input-wrap">
+            <i class="bi bi-lock-fill auth-input-icon"></i>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="auth-input"
+              placeholder="••••••••"
+              required
+              autocomplete="current-password"
+            >
+            <button type="button" class="auth-toggle-pw" onclick="togglePw()" tabindex="-1" aria-label="Toggle password visibility">
+              <i class="bi bi-eye" id="pwIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="auth-remember-row">
+          <label class="auth-checkbox-label">
+            <input type="checkbox" id="remember_me" name="remember_me" value="1" class="auth-checkbox">
+            <span class="auth-checkmark"></span>
+            <span>Remember me for 30 days</span>
+          </label>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" id="loginBtn">
+          <span class="btn-text">Sign In</span>
+          <i class="bi bi-arrow-right btn-arrow"></i>
+        </button>
+
+      </form>
+
+      <div class="auth-divider"><span>or</span></div>
+
+      <p class="auth-switch-text">
+        Don't have an account?
+        <a href="/signup" class="auth-switch-link">Create one for free ✨</a>
+      </p>
+
+      <p class="auth-footer-note">
+        <i class="bi bi-shield-lock-fill"></i>
+        End-to-end anonymity guaranteed
+      </p>
+
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -56,9 +147,9 @@ function togglePw() {
   i.type = i.type === 'password' ? 'text' : 'password';
   icon.className = i.type === 'text' ? 'bi bi-eye-slash' : 'bi bi-eye';
 }
-document.getElementById('loginForm').addEventListener('submit', function() {
+document.getElementById('loginForm').addEventListener('submit', function(e) {
   const btn = document.getElementById('loginBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Logging in...';
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="width:16px;height:16px;border-width:2px"></span> Signing in…';
 });
 </script>

@@ -1,84 +1,168 @@
-<div class="auth-wrapper">
-  <div class="auth-card" style="max-width:500px">
+<div class="auth-split-wrapper">
 
-    <!-- Logo -->
-    <div class="text-center mb-4">
-      <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#a855f7,#f472b6);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem">🎭</div>
-      <h2 class="brand-name mb-1">Join CampusConfess</h2>
-      <p style="color:var(--text-3);font-size:.85rem">Anonymous by default. Safe by design.</p>
+  <!-- ── Left Panel: Brand showcase ── -->
+  <div class="auth-brand-panel" aria-hidden="true">
+    <div class="brand-panel-inner">
+      <div class="brand-logo-hero">
+        <div class="brand-icon-ring">🎭</div>
+      </div>
+      <h1 class="brand-panel-title">Join the Community</h1>
+      <p class="brand-panel-sub">Create your anonymous identity and start sharing.</p>
+
+      <div class="brand-features">
+        <div class="brand-feature-item">
+          <div class="feature-icon-wrap"><i class="bi bi-person-badge-fill"></i></div>
+          <div>
+            <div class="feature-title">Anonymous Identity</div>
+            <div class="feature-desc">Random username, zero trace of your real self.</div>
+          </div>
+        </div>
+        <div class="brand-feature-item">
+          <div class="feature-icon-wrap"><i class="bi bi-people-fill"></i></div>
+          <div>
+            <div class="feature-title">Campus Network</div>
+            <div class="feature-desc">Only verified students from your college.</div>
+          </div>
+        </div>
+        <div class="brand-feature-item">
+          <div class="feature-icon-wrap"><i class="bi bi-stars"></i></div>
+          <div>
+            <div class="feature-title">Free Forever</div>
+            <div class="feature-desc">No subscriptions, no hidden fees.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="floating-cards-wrap">
+        <div class="floating-card fc-1">
+          <span class="fc-avatar" style="background:#0891b2">C</span>
+          <div>
+            <div class="fc-text">"The only place I can be truly myself 🌟"</div>
+            <div class="fc-user">CrypticFox23</div>
+          </div>
+        </div>
+        <div class="floating-card fc-2">
+          <span class="fc-avatar" style="background:#b45309">N</span>
+          <div>
+            <div class="fc-text">"3000+ students already confessing daily!"</div>
+            <div class="fc-user">NightOwlStudent</div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Privacy Notice -->
-    <div class="privacy-notice mb-4">
-      <div class="d-flex gap-2 align-items-start">
-        <span style="font-size:1.2rem;flex-shrink:0">🛡️</span>
-        <p style="font-size:.8rem;color:var(--text-2);margin:0;line-height:1.5">
-          <strong style="color:var(--text)">Privacy Notice:</strong> Your real name is collected <em>only</em> for verification and safety.
-          <strong style="color:#c084fc">It will never be shown to anyone.</strong>
-          You'll appear as a randomly generated anonymous username everywhere.
+  <!-- ── Right Panel: Signup form ── -->
+  <div class="auth-form-panel">
+    <div class="auth-form-inner auth-form-inner--signup">
+
+      <!-- Mobile brand -->
+      <div class="auth-mobile-brand">
+        <div class="mobile-brand-icon">🎭</div>
+        <span class="mobile-brand-name">CampusConfess</span>
+      </div>
+
+      <div class="auth-form-header">
+        <h2 class="auth-form-title">Create your account</h2>
+        <p class="auth-form-subtitle">Anonymous by default. Safe by design.</p>
+      </div>
+
+      <!-- Privacy badge -->
+      <div class="auth-privacy-badge">
+        <i class="bi bi-shield-check-fill" style="color:#a855f7;font-size:1.1rem;flex-shrink:0"></i>
+        <p>
+          <strong>Privacy First:</strong> Your real name is for verification only —
+          <strong style="color:#c084fc">never visible to anyone.</strong>
+          You'll appear as a randomly generated anonymous username.
         </p>
       </div>
+
+      <form action="/signup" method="POST" id="signupForm" novalidate>
+
+        <div class="auth-fields-row">
+          <div class="auth-field-group">
+            <label for="real_name" class="auth-label">Full Name <span class="auth-label-note">(private)</span></label>
+            <div class="auth-input-wrap">
+              <i class="bi bi-person-badge-fill auth-input-icon"></i>
+              <input type="text" id="real_name" name="real_name" class="auth-input" placeholder="Your real name — kept private" required minlength="2" maxlength="80">
+            </div>
+          </div>
+
+          <div class="auth-field-group">
+            <label for="gender" class="auth-label">I identify as…</label>
+            <div class="auth-input-wrap">
+              <i class="bi bi-gender-neuter auth-input-icon"></i>
+              <select id="gender" name="gender" class="auth-input auth-select" required>
+                <option value="" disabled selected>Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other / Prefer not to say</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-field-group">
+          <label for="email" class="auth-label">College Email</label>
+          <div class="auth-input-wrap">
+            <i class="bi bi-envelope-fill auth-input-icon"></i>
+            <input type="email" id="email" name="email" class="auth-input" placeholder="you@university.edu" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="auth-field-group">
+          <label for="password" class="auth-label">Password</label>
+          <div class="auth-input-wrap">
+            <i class="bi bi-lock-fill auth-input-icon"></i>
+            <input type="password" id="password" name="password" class="auth-input" placeholder="Min 8 chars, 1 uppercase, 1 number" required minlength="8">
+            <button type="button" class="auth-toggle-pw" onclick="togglePw('password','pwIcon')" tabindex="-1" aria-label="Toggle password">
+              <i class="bi bi-eye" id="pwIcon"></i>
+            </button>
+          </div>
+          <!-- Strength bars -->
+          <div class="pw-strength-bars" id="pwStrengthBars">
+            <div class="pw-bar" id="bar1"></div>
+            <div class="pw-bar" id="bar2"></div>
+            <div class="pw-bar" id="bar3"></div>
+            <div class="pw-bar" id="bar4"></div>
+          </div>
+          <div class="pw-strength-label" id="pwStrengthLabel"></div>
+        </div>
+
+        <div class="auth-field-group">
+          <label for="confirm_password" class="auth-label">Confirm Password</label>
+          <div class="auth-input-wrap">
+            <i class="bi bi-lock-fill auth-input-icon"></i>
+            <input type="password" id="confirm_password" name="confirm_password" class="auth-input" placeholder="Repeat your password" required>
+            <button type="button" class="auth-toggle-pw" onclick="togglePw('confirm_password','cpwIcon')" tabindex="-1" aria-label="Toggle confirm password">
+              <i class="bi bi-eye" id="cpwIcon"></i>
+            </button>
+          </div>
+          <div class="pw-match-label" id="pwMatch"></div>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" id="signupBtn">
+          <span class="btn-text">Create Anonymous Account</span>
+          <i class="bi bi-arrow-right btn-arrow"></i>
+        </button>
+
+      </form>
+
+      <div class="auth-divider"><span>or</span></div>
+
+      <p class="auth-switch-text">
+        Already have an account?
+        <a href="/login" class="auth-switch-link">Sign in →</a>
+      </p>
+
+      <p class="auth-footer-note">
+        <i class="bi bi-shield-lock-fill"></i>
+        End-to-end anonymity guaranteed
+      </p>
+
     </div>
-
-    <form action="/signup" method="POST" id="signupForm">
-      <div class="mb-3">
-        <label for="real_name" class="form-label">Full Name <span style="color:var(--text-3);font-weight:400">(private)</span></label>
-        <div class="input-group-icon">
-          <i class="bi bi-person-badge-fill"></i>
-          <input type="text" id="real_name" name="real_name" class="form-control" placeholder="Your real name — kept private" required minlength="2" maxlength="80">
-        </div>
-      </div>
-      <div class="mb-3">
-        <label for="gender" class="form-label">I am a...</label>
-        <div class="input-group-icon">
-          <i class="bi bi-gender-neuter"></i>
-          <select id="gender" name="gender" class="form-control" required>
-            <option value="" disabled selected>Select your gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">College Email</label>
-        <div class="input-group-icon">
-          <i class="bi bi-envelope-fill"></i>
-          <input type="email" id="email" name="email" class="form-control" placeholder="you@university.edu" required autocomplete="email">
-        </div>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <div class="input-group-icon">
-          <i class="bi bi-lock-fill"></i>
-          <input type="password" id="password" name="password" class="form-control" placeholder="Min 8 chars, 1 uppercase, 1 number" required minlength="8">
-          <button type="button" class="toggle-pw" onclick="togglePw('password','pwIcon')" tabindex="-1"><i class="bi bi-eye" id="pwIcon"></i></button>
-        </div>
-        <div class="mt-2 d-flex gap-1" id="pwStrengthBars">
-          <div class="flex-grow-1 rounded" style="height:3px;background:var(--border-2)" id="bar1"></div>
-          <div class="flex-grow-1 rounded" style="height:3px;background:var(--border-2)" id="bar2"></div>
-          <div class="flex-grow-1 rounded" style="height:3px;background:var(--border-2)" id="bar3"></div>
-          <div class="flex-grow-1 rounded" style="height:3px;background:var(--border-2)" id="bar4"></div>
-        </div>
-        <div style="font-size:.72rem;margin-top:.3rem;color:var(--text-3)" id="pwStrengthLabel"></div>
-      </div>
-      <div class="mb-4">
-        <label for="confirm_password" class="form-label">Confirm Password</label>
-        <div class="input-group-icon">
-          <i class="bi bi-lock-fill"></i>
-          <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Repeat your password" required>
-        </div>
-        <div style="font-size:.72rem;margin-top:.3rem" id="pwMatch"></div>
-      </div>
-      <button type="submit" class="btn btn-glow w-100 py-2 mb-3" id="signupBtn" style="font-size:1rem">
-        Create Anonymous Account ✨
-      </button>
-    </form>
-
-    <p class="text-center mb-0" style="font-size:.875rem;color:var(--text-2)">
-      Already have an account? <a href="/login" style="color:#c084fc;font-weight:700">Login</a>
-    </p>
   </div>
+
 </div>
 
 <script>
@@ -104,7 +188,7 @@ pw.addEventListener('input', () => {
   if (/[A-Z]/.test(v)) score++;
   if (/[0-9]/.test(v)) score++;
   if (/[^A-Za-z0-9]/.test(v)) score++;
-  bars.forEach((b,i) => b.style.background = i < score ? colors[score] : 'var(--border-2)');
+  bars.forEach((b,i) => b.style.background = i < score ? colors[score] : 'var(--border)');
   strLbl.textContent = score > 0 ? labels[score] : '';
   strLbl.style.color = colors[score] || '';
   checkMatch();
@@ -115,9 +199,9 @@ cpw.addEventListener('input', checkMatch);
 function checkMatch() {
   if (!cpw.value) { matchEl.textContent = ''; return; }
   if (cpw.value === pw.value) {
-    matchEl.innerHTML = '<span style="color:#4ade80">✓ Passwords match</span>';
+    matchEl.innerHTML = '<span style="color:#4ade80"><i class="bi bi-check-circle-fill me-1"></i>Passwords match</span>';
   } else {
-    matchEl.innerHTML = '<span style="color:#f87171">✗ Passwords don\'t match</span>';
+    matchEl.innerHTML = '<span style="color:#f87171"><i class="bi bi-x-circle-fill me-1"></i>Passwords don\'t match</span>';
   }
 }
 
@@ -125,6 +209,6 @@ document.getElementById('signupForm').addEventListener('submit', (e) => {
   if (cpw.value !== pw.value) { e.preventDefault(); return; }
   const btn = document.getElementById('signupBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating account...';
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="width:16px;height:16px;border-width:2px"></span> Creating account…';
 });
 </script>
