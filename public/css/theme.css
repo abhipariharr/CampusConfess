@@ -711,7 +711,7 @@ h6 {
 
 /* Timestamp */
 .post-time {
-  padding: 0 1rem 3rem;
+  padding: 0 1rem 4rem;
   font-size: 10px;
   font-weight: 600;
   color: var(--text-3);
