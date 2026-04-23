@@ -1,3 +1,4 @@
+console.log("SMTP_USER:", process.env.SMTP_USER);
 const nodemailer = require('nodemailer');
 
 function createTransporter() {
@@ -40,7 +41,7 @@ async function sendPasswordResetEmail(toEmail, resetLink) {
     console.log(resetLink + '\n');
     return;
   }
-  console.log("SMTP_USER:", process.env.SMTP_USER);
+  
 console.log("SMTP_PASS:", process.env.SMTP_PASS ? "SET" : "NOT SET");
 
   await transporter.sendMail(mailOptions);
