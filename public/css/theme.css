@@ -96,6 +96,7 @@ h1,h2,h3,h4,h5,h6 {
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border) !important;
   height: 60px;
+  overflow: hidden;
 }
 
 .brand-icon {
@@ -187,8 +188,8 @@ h1,h2,h3,h4,h5,h6 {
 
 @media (max-width: 768px) {
   .bottom-nav { display: flex; }
-  /* push content clear of the fixed bottom nav */
-  main { padding-bottom: calc(60px + env(safe-area-inset-bottom) + 16px) !important; }
+  /* push content well clear of the fixed bottom nav (60px nav + browser chrome buffer) */
+  main { padding-bottom: max(100px, calc(60px + env(safe-area-inset-bottom) + 24px)) !important; }
 }
 
 /* ─── Dropdown ────────────────────────────────────────── */
