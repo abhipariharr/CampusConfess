@@ -104,7 +104,7 @@ router.get('/forgot-password', redirectIfAuth, (req, res) => {
 
 // ─── POST /forgot-password ────────────────────────────────────────────────────
 router.post('/forgot-password', redirectIfAuth, forgotPasswordRateLimit, [
-  body('email').isEmail().normalizeEmail(),
+  body('email').isEmail(),
 ], async (req, res) => {
   try {
     const { email } = req.body;
