@@ -31,12 +31,12 @@
       <a href="/confessions/new" class="bottom-nav-btn">
         <div class="bottom-nav-post"><i class="bi bi-plus-lg" style="font-size:18px"></i></div>
       </a>
-      <a href="/chat" class="bottom-nav-btn <%= typeof title !== 'undefined' && title === 'Chat' ? 'active' : '' %>" style="position:relative">
+      <a href="/chat" class="bottom-nav-btn <%= typeof title !== 'undefined' && title === 'Chat' ? 'active' : '' %>">
         <i class="bi bi-chat-dots<%= typeof title !== 'undefined' && title === 'Chat' ? '-fill' : '' %>"></i>
         <span id="chatBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:9px;display:none">0</span>
       </a>
       <a href="/profile" class="bottom-nav-btn <%= typeof title !== 'undefined' && title === 'My Profile' ? 'active' : '' %>">
-        <div style="width:26px;height:26px;border-radius:50%;background:<%= user.avatar_color||'#7c3aed' %>;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#fff;border:<%= typeof title !== 'undefined' && title === 'My Profile' ? '2px' : '0px' %> solid #fff">
+        <div class="bottom-nav-avatar" style="background:<%= user.avatar_color||'#7c3aed' %>;outline:<%= typeof title !== 'undefined' && title === 'My Profile' ? '2px solid #fff' : 'none' %>;outline-offset:1px">
           <%= user.anon_username.charAt(0) %>
         </div>
       </a>
