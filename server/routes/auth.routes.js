@@ -27,11 +27,27 @@ router.post('/login', redirectIfAuth, loginRateLimit, [
   }
   try {
     const { email, password, remember_me } = req.body;
-    const user = await UserModel.findByEmail(email);
-    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-      req.session.error = 'Invalid email or password.';
-      return res.redirect('/login');
-    }
+
+const user = await UserModel.findByEmail(email);
+
+// 🔍 DEBUG START
+console.log("INPUT EMAIL:", email);
+console.log("USER:", user);
+// 🔍 DEBUG END
+
+let match = false;
+if (user) {
+  match = await bcrypt.compare(password, user.password_hash);
+
+  console.log("INPUT PASSWORD:", password);
+  console.log("DB HASH:", user.password_hash);
+  console.log("MATCH:", match);
+}
+
+if (!user || !match) {
+  req.session.error = 'Invalid email or password.';
+  return res.redirect('/login');
+}
     if (user.is_banned) {
       req.session.error = 'Your account has been suspended. Contact support.';
       return res.redirect('/login');
