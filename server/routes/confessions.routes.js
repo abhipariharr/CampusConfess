@@ -48,22 +48,39 @@ router.post('/', requireAuth, [
   body('content').trim().isLength({ min: 10, max: 1500 }).withMessage('Confession must be 10–1500 characters.'),
 ], async (req, res) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     req.session.error = errors.array()[0].msg;
     return res.redirect('/confessions/new');
   }
+
   try {
     let { content, tags } = req.body;
-    let content = filterBadWords(req.body.content);
 
-// 🔒 Hide phone/email/links
-content = sanitizeContent(content);
-    const tagArr = (tags || '').split(',').map(t => t.trim().toLowerCase()).filter(Boolean).slice(0, 5);
-    await ConfessionModel.create({ user_id: req.session.user.id, content, tags: tagArr.join(',') });
+    content = filterBadWords(content);
+
+    // 🔒 Hide phone/email/links
+    content = sanitizeContent(content);
+
+    const tagArr = (tags || '')
+      .split(',')
+      .map(t => t.trim().toLowerCase())
+      .filter(Boolean)
+      .slice(0, 5);
+
+    await ConfessionModel.create({
+      user_id: req.session.user.id,
+      content,
+      tags: tagArr.join(',')
+    });
+
     req.session.success = 'Your confession has been posted anonymously! 🎭';
+
     res.redirect('/confessions');
+
   } catch (err) {
     console.error('Post error:', err);
+
     req.session.error = 'Failed to post confession.';
     res.redirect('/confessions/new');
   }
