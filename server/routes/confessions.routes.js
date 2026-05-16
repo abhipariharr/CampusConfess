@@ -54,7 +54,10 @@ router.post('/', requireAuth, [
   }
   try {
     let { content, tags } = req.body;
-    content = filterBadWords(content);
+    let content = filterBadWords(req.body.content);
+
+// 🔒 Hide phone/email/links
+content = sanitizeContent(content);
     const tagArr = (tags || '').split(',').map(t => t.trim().toLowerCase()).filter(Boolean).slice(0, 5);
     await ConfessionModel.create({ user_id: req.session.user.id, content, tags: tagArr.join(',') });
     req.session.success = 'Your confession has been posted anonymously! 🎭';
