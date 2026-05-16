@@ -81,18 +81,26 @@ router.post('/:id/comment', requireAuth, [
   body('content').trim().isLength({ min: 1, max: 500 }).withMessage('Comment must be 1-500 characters.'),
 ], async (req, res) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     req.session.error = errors.array()[0].msg;
     return res.redirect(`/confessions`);
   }
+
   try {
-    const content = filterBadWords(req.body.content);
+    let content = filterBadWords(req.body.content);
+
+    // 🔒 Hide sensitive info
+    content = sanitizeContent(content);
+
     await ConfessionModel.addComment({
       confession_id: req.params.id,
       user_id: req.session.user.id,
       content,
     });
+
     res.json({ success: true });
+
   } catch (err) {
     res.status(500).json({ error: 'Failed to post comment.' });
   }
